@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Reverse SSH Test</title>
+    <title>Upload File to S3 via EC2</title>
 </head>
 <body>
-  <h1>Hello from Private Server!</h1>
-  <form id="userdata" action="/submit" method="POST">
-    <input type="text" name="message" placeholder="Type something">
-    <button type="submit">Send</button>
-  </form>
+    <h2>Upload File</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" required>
+        <button type="submit">Upload</button>
+    </form>
 
-  <script>
-    document.getElementById('userdata').onsubmit = async (e) => {
-      e.preventDefault();
-      const data = { message: e.target.message.value };
-      await fetch('/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      alert('Sent!');
-    };
-  </script>
+    <p id="status"></p>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) return alert('Select a file');
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const res = await fetch('http://127.0.0.1:7777/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                document.getElementById('status').innerText = await res.text();
+            } catch (err) {
+                document.getElementById('status').innerText = 'Upload failed: ' + err;
+            }
+        });
+    </script>
 </body>
 </html>
