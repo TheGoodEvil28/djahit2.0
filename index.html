@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload File to S3 via EC2</title>
+    <title>Djahit Image Upload & Analysis</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .result-box { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        img { max-width: 300px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; }
+    </style>
 </head>
 <body>
     <h2>Upload File</h2>
@@ -10,10 +16,20 @@
         <button type="submit">Upload</button>
     </form>
 
-    <p id="status"></p>
+    <div id="result" class="result-box" style="display:none;">
+        <h3>Uploaded Image</h3>
+        <img id="uploadedImage" src="" alt="Uploaded Image">
+        
+        <h3>Analysis Result</h3>
+        <pre id="analysisOutput"></pre>
+    </div>
 
     <script>
         const form = document.getElementById('uploadForm');
+        const resultBox = document.getElementById('result');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const analysisOutput = document.getElementById('analysisOutput');
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const fileInput = document.getElementById('fileInput');
@@ -24,9 +40,24 @@
 
             try {
                 const res = await fetch('/upload', { method: 'POST', body: formData });
-                document.getElementById('status').innerText = await res.text();
+                const data = await res.json(); // expect JSON response
+
+                // Show uploaded image (from your S3 bucket)
+                // Construct S3 URL — make sure bucket/object is public OR use signed URLs
+                const bucketName = "djahit-image-upload-bucket"; // change if needed
+                const region = "us-east-1"; // your AWS region
+                const imageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${fileInput.files[0].name}`;
+
+                uploadedImage.src = imageUrl;
+
+                // Show analysis result nicely formatted
+                analysisOutput.innerText = JSON.stringify(data, null, 2);
+
+                // Show result box
+                resultBox.style.display = 'block';
+
             } catch (err) {
-                document.getElementById('status').innerText = 'Upload failed: ' + err;
+                alert('Upload failed: ' + err);
             }
         });
     </script>
