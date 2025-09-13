@@ -141,7 +141,7 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const fileInput = document.getElementById('fileInput');
   if (!fileInput.files.length) return alert('Select a file');
-  
+
   const file = fileInput.files[0];
   loading.style.display = 'block';
   resultBox.style.display = 'none';
@@ -153,27 +153,44 @@ form.addEventListener('submit', async (e) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filename: file.name, contentType: file.type })
     });
-    if (!res1.ok) throw new Error(`generate upload url failed: ${res1.status}`);
+
+    if (!res1.ok) {
+      const errText = await res1.text();
+      throw new Error(`generate upload url failed: ${res1.status} ${errText}`);
+    }
     const { uploadUrl, key } = await res1.json();
 
     // 2) Upload file to S3 using presigned URL
-    const putRes = await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
-    if (!putRes.ok) throw new Error(`upload failed: ${putRes.status}`);
+    const putRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type,
+        'Cache-Control': 'no-cache'
+      }
+    });
+    if (!putRes.ok) {
+      const errText = await putRes.text();
+      throw new Error(`upload failed: ${putRes.status} ${errText}`);
+    }
 
-    // 3) Analyze the uploaded image
+    // 3) Analyze uploaded image
     const res2 = await fetch(`${API_BASE}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key })
     });
-    if (!res2.ok) throw new Error(`analyze failed: ${res2.status}`);
+    if (!res2.ok) {
+      const errText = await res2.text();
+      throw new Error(`analyze failed: ${res2.status} ${errText}`);
+    }
     const data = await res2.json();
 
-    // 4) Display image & tables
-    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}`;
+    // 4) Display image with cache-busting
+    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}?t=${Date.now()}`;
     resultBox.style.display = 'block';
 
-    // Clothing
+    // Populate clothing table
     const clothingBody = clothingTable.querySelector('tbody');
     clothingBody.innerHTML = '';
     if (data.clothing?.length) {
@@ -186,13 +203,15 @@ form.addEventListener('submit', async (e) => {
       });
     } else clothingTable.style.display = 'none';
 
-    // Defects
+    // Populate defects table
     const defectsBody = defectsTable.querySelector('tbody');
     defectsBody.innerHTML = '';
     if (data.defects?.length) {
       defectsTable.style.display = 'table';
       data.defects.forEach(item => {
-        defectsBody.insertAdjacentHTML('beforeend', `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
+        defectsBody.insertAdjacentHTML('beforeend',
+          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`
+        );
       });
     } else defectsTable.style.display = 'none';
 
