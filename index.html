@@ -173,16 +173,8 @@ form.addEventListener('submit', async (e) => {
     if (!res2.ok) throw new Error('Analyze failed');
     const data = await res2.json();
 
-    // 4) Generate presigned GET URL for image
-    const res3 = await fetch(`${API_BASE}/get-url`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key })
-    });
-    if (!res3.ok) throw new Error('Failed to get image URL');
-    const { url } = await res3.json();
-
-    uploadedImage.src = url;
+    // 4) Display uploaded image directly from S3
+    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}?t=${Date.now()}`;
     resultBox.style.display = 'block';
 
     // Populate clothing table
@@ -216,6 +208,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 </script>
+
 
 </body>
 </html>
