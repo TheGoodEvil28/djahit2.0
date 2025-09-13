@@ -29,7 +29,6 @@
   </div>
 
   <script>
-    // <-- set your API base here (copy your API Gateway invoke url without trailing slash)
     const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
 
     const form = document.getElementById('uploadForm');
@@ -46,8 +45,8 @@
       const file = fileInput.files[0];
 
       try {
-        // 1) Ask backend for presigned PUT URL
-        const res1 = await fetch(API_BASE + '/upload', {
+        // 1) Generate presigned PUT URL
+        const res1 = await fetch(API_BASE + '/generate-upload-url', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename: file.name, contentType: file.type })
@@ -55,11 +54,15 @@
         if (!res1.ok) throw new Error('generate upload url failed: ' + res1.statusText);
         const { uploadUrl, key } = await res1.json();
 
-        // 2) Upload directly to S3 using the presigned URL
-        const putRes = await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+        // 2) Upload file to S3
+        const putRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          body: file,
+          headers: { 'Content-Type': file.type }
+        });
         if (!putRes.ok) throw new Error('upload failed: ' + putRes.statusText);
 
-        // 3) Ask backend to analyze the image
+        // 3) Analyze image
         const res2 = await fetch(API_BASE + '/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -68,11 +71,11 @@
         if (!res2.ok) throw new Error('analyze failed: ' + res2.statusText);
         const data = await res2.json();
 
-        // 4) Show image + tables
-        uploadedImage.src = 'https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/' + encodeURIComponent(key);
+        // 4) Display image and results
+        uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}`;
         resultBox.style.display = 'block';
 
-        // clothing
+        // Clothing
         const clothingBody = clothingTable.querySelector('tbody');
         clothingBody.innerHTML = '';
         if (data.clothing && data.clothing.length) {
@@ -84,7 +87,7 @@
           });
         } else clothingTable.style.display = 'none';
 
-        // defects
+        // Defects
         const defectsBody = defectsTable.querySelector('tbody');
         defectsBody.innerHTML = '';
         if (data.defects && data.defects.length) {
