@@ -1,107 +1,223 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8">
   <title>Djahit Image Upload & Analysis</title>
   <style>
-    body { font-family: Arial, sans-serif; padding:20px }
-    .result-box{margin-top:20px;padding:15px;border:1px solid #ccc;border-radius:8px}
-    img{max-width:300px;margin-top:10px;border:1px solid #ddd;border-radius:5px}
-    table{border-collapse:collapse;margin-top:10px;width:100%}
-    th,td{border:1px solid #ddd;padding:8px;text-align:left}
-    th{background:#f5f5f5}
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f7f8fa;
+      color: #333;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #uploadForm {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    #fileInput {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .result-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+      font-size: 0.95em;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #007BFF;
+    }
+
+    @media (max-width: 600px) {
+      #uploadForm {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
-  <h2>Upload File</h2>
-  <form id="uploadForm">
-    <input type="file" id="fileInput" accept="image/*" required>
-    <button type="submit">Upload & Analyze</button>
-  </form>
 
-  <div id="result" class="result-box" style="display:none;">
-    <h3>Uploaded Image</h3>
-    <img id="uploadedImage" src="" alt="Uploaded Image">
-    <h3>Clothing Detected</h3>
-    <table id="clothingTable" style="display:none;"><thead><tr><th>Name</th><th>Confidence</th><th>Parents</th></tr></thead><tbody></tbody></table>
-    <h3>Defects Detected</h3>
-    <table id="defectsTable" style="display:none;"><thead><tr><th>Name</th><th>Confidence</th></tr></thead><tbody></tbody></table>
-  </div>
+<h2>Djahit Image Upload & Analysis</h2>
 
-  <script>
-    const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
+<form id="uploadForm">
+  <input type="file" id="fileInput" accept="image/*" required>
+  <button type="submit">Upload & Analyze</button>
+</form>
 
-    const form = document.getElementById('uploadForm');
-    const uploadedImage = document.getElementById('uploadedImage');
-    const resultBox = document.getElementById('result');
-    const clothingTable = document.getElementById('clothingTable');
-    const defectsTable = document.getElementById('defectsTable');
+<div class="loading" id="loading">Processing...</div>
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fileInput = document.getElementById('fileInput');
-      if (!fileInput.files.length) return alert('Select a file');
+<div id="result" class="result-box" style="display:none;">
+  <h3>Uploaded Image</h3>
+  <img id="uploadedImage" src="" alt="Uploaded Image">
 
-      const file = fileInput.files[0];
+  <h3>Clothing Detected</h3>
+  <table id="clothingTable" style="display:none;">
+    <thead><tr><th>Name</th><th>Confidence</th><th>Parents</th></tr></thead>
+    <tbody></tbody>
+  </table>
 
-      try {
-        // 1) Generate presigned PUT URL
-        const res1 = await fetch(API_BASE + '/generate-upload-url', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: file.name, contentType: file.type })
-        });
-        if (!res1.ok) throw new Error('generate upload url failed: ' + res1.statusText);
-        const { uploadUrl, key } = await res1.json();
+  <h3>Defects Detected</h3>
+  <table id="defectsTable" style="display:none;">
+    <thead><tr><th>Name</th><th>Confidence</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-        // 2) Upload file to S3
-        const putRes = await fetch(uploadUrl, {
-          method: 'PUT',
-          body: file,
-          headers: { 'Content-Type': file.type }
-        });
-        if (!putRes.ok) throw new Error('upload failed: ' + putRes.statusText);
+ <script>
+const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
 
-        // 3) Analyze image
-        const res2 = await fetch(API_BASE + '/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key })
-        });
-        if (!res2.ok) throw new Error('analyze failed: ' + res2.statusText);
-        const data = await res2.json();
+const form = document.getElementById('uploadForm');
+const uploadedImage = document.getElementById('uploadedImage');
+const resultBox = document.getElementById('result');
+const clothingTable = document.getElementById('clothingTable');
+const defectsTable = document.getElementById('defectsTable');
 
-        // 4) Display image and results
-        uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}`;
-        resultBox.style.display = 'block';
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fileInput = document.getElementById('fileInput');
+  if (!fileInput.files.length) return alert('Select a file');
 
-        // Clothing
-        const clothingBody = clothingTable.querySelector('tbody');
-        clothingBody.innerHTML = '';
-        if (data.clothing && data.clothing.length) {
-          clothingTable.style.display = 'table';
-          data.clothing.forEach(item => {
-            const parents = (item.Parents || []).map(p=>p.Name).join(', ') || '-';
-            clothingBody.insertAdjacentHTML('beforeend',
-              `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td><td>${parents}</td></tr>`);
-          });
-        } else clothingTable.style.display = 'none';
+  const file = fileInput.files[0];
 
-        // Defects
-        const defectsBody = defectsTable.querySelector('tbody');
-        defectsBody.innerHTML = '';
-        if (data.defects && data.defects.length) {
-          defectsTable.style.display = 'table';
-          data.defects.forEach(item => {
-            defectsBody.insertAdjacentHTML('beforeend', `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
-          });
-        } else defectsTable.style.display = 'none';
-
-      } catch (err) {
-        alert('Error: ' + (err.message || err));
-        console.error(err);
-      }
+  try {
+    // 1) Generate presigned PUT URL with cache-busting
+    const res1 = await fetch(`${API_BASE}/generate-upload-url?ts=${Date.now()}`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify({ filename: file.name, contentType: file.type })
     });
-  </script>
+
+    const text1 = await res1.text();
+    if (!res1.ok) throw new Error(`generate upload url failed: ${res1.status} ${text1 || 'No body returned'}`);
+    
+    const { uploadUrl, key } = JSON.parse(text1);
+
+    // 2) Upload file to S3 using presigned URL
+    const putRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': file.type, 'Cache-Control': 'no-cache' }
+    });
+
+    if (!putRes.ok) {
+      const textPut = await putRes.text();
+      throw new Error(`upload failed: ${putRes.status} ${textPut || 'No body returned'}`);
+    }
+
+    // 3) Analyze image
+    const res2 = await fetch(`${API_BASE}/analyze?ts=${Date.now()}`, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify({ key })
+    });
+
+    const text2 = await res2.text();
+    if (!res2.ok) throw new Error(`analyze failed: ${res2.status} ${text2 || 'No body returned'}`);
+
+    const data = JSON.parse(text2);
+
+    // 4) Display image and results
+    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}`;
+    resultBox.style.display = 'block';
+
+    // Clothing
+    const clothingBody = clothingTable.querySelector('tbody');
+    clothingBody.innerHTML = '';
+    if (data.clothing && data.clothing.length) {
+      clothingTable.style.display = 'table';
+      data.clothing.forEach(item => {
+        const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
+        clothingBody.insertAdjacentHTML('beforeend',
+          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td><td>${parents}</td></tr>`
+        );
+      });
+    } else clothingTable.style.display = 'none';
+
+    // Defects
+    const defectsBody = defectsTable.querySelector('tbody');
+    defectsBody.innerHTML = '';
+    if (data.defects && data.defects.length) {
+      defectsTable.style.display = 'table';
+      data.defects.forEach(item => {
+        defectsBody.insertAdjacentHTML('beforeend', `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
+      });
+    } else defectsTable.style.display = 'none';
+
+  } catch (err) {
+    alert('Error: ' + (err.message || err));
+    console.error(err);
+  }
+});
+</script>
+
 </body>
 </html>
