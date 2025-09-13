@@ -174,8 +174,17 @@ form.addEventListener('submit', async (e) => {
     const data = await res2.json();
 
     // 4) Display uploaded image directly from S3
-    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}?t=${Date.now()}`;
-    resultBox.style.display = 'block';
+    // Generate presigned GET URL
+    const res3 = await fetch(`${API_BASE}/get-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    if (!res3.ok) throw new Error('Failed to get image URL');
+    const { getUrl } = await res3.json();
+    
+    uploadedImage.src = getUrl;
+
 
     // Populate clothing table
     const clothingBody = clothingTable.querySelector('tbody');
