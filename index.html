@@ -11,92 +11,34 @@
       background: #f7f8fa;
       color: #333;
     }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
+    h2 { text-align: center; margin-bottom: 20px; }
     #uploadForm {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
+      display: flex; justify-content: center; align-items: center; gap: 10px;
+      margin-bottom: 20px; flex-wrap: wrap;
     }
-
-    #fileInput {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
+    #fileInput { padding: 8px; border-radius: 5px; border: 1px solid #ccc; }
     button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
+      background-color: #007BFF; color: white; border: none;
+      padding: 10px 20px; border-radius: 5px; cursor: pointer;
       transition: background 0.2s ease;
     }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
+    button:hover { background-color: #0056b3; }
     .loading {
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-      color: #007BFF;
-      display: none;
+      text-align: center; margin-bottom: 20px;
+      font-weight: bold; color: #007BFF; display: none;
     }
-
     .result-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
+      background: #fff; padding: 20px; border-radius: 10px;
       box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: 0 auto 30px auto;
+      max-width: 800px; margin: 0 auto 30px auto;
       display: none;
     }
-
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      margin-bottom: 15px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-      font-size: 0.95em;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background: #f0f0f0;
-    }
-
-    tr:hover {
-      background: #f9f9f9;
-    }
-
-    @media (max-width: 600px) {
-      #uploadForm {
-        flex-direction: column;
-      }
-    }
+    img { max-width: 100%; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; font-size: 0.95em; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f0f0f0; }
+    tr:hover { background: #f9f9f9; }
+    @media (max-width: 600px) { #uploadForm { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -172,9 +114,9 @@ form.addEventListener('submit', async (e) => {
     });
     if (!res2.ok) throw new Error('Analyze failed');
     const data = await res2.json();
+    console.log('Analyze result:', data);
 
     // 4) Display uploaded image directly from S3
-    // Generate presigned GET URL
     const res3 = await fetch(`${API_BASE}/get-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -182,42 +124,48 @@ form.addEventListener('submit', async (e) => {
     });
     if (!res3.ok) throw new Error('Failed to get image URL');
     const { getUrl } = await res3.json();
-    
-    uploadedImage.src = getUrl;
+    console.log('Image URL:', getUrl);
 
+    uploadedImage.src = getUrl;
+    resultBox.style.display = 'block';
 
     // Populate clothing table
     const clothingBody = clothingTable.querySelector('tbody');
     clothingBody.innerHTML = '';
     if (data.clothing?.length) {
-      clothingTable.style.display = 'table';
       data.clothing.forEach(item => {
         const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
         clothingBody.insertAdjacentHTML('beforeend',
           `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td><td>${parents}</td></tr>`);
       });
-    } else clothingTable.style.display = 'none';
+    } else {
+      clothingBody.innerHTML = `<tr><td colspan="3">No clothing detected</td></tr>`;
+    }
 
     // Populate defects table
     const defectsBody = defectsTable.querySelector('tbody');
     defectsBody.innerHTML = '';
     if (data.defects?.length) {
-      defectsTable.style.display = 'table';
       data.defects.forEach(item => {
         defectsBody.insertAdjacentHTML('beforeend',
           `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
       });
-    } else defectsTable.style.display = 'none';
+    } else {
+      defectsBody.innerHTML = `<tr><td colspan="2">No defects detected</td></tr>`;
+    }
 
   } catch (err) {
     alert('Error: ' + (err.message || err));
     console.error(err);
+    resultBox.style.display = 'block';
+    uploadedImage.src = '';
+    clothingTable.querySelector('tbody').innerHTML = '<tr><td colspan="3">Error loading clothing</td></tr>';
+    defectsTable.querySelector('tbody').innerHTML = '<tr><td colspan="2">Error loading defects</td></tr>';
   } finally {
     loading.style.display = 'none';
   }
 });
 </script>
-
 
 </body>
 </html>
