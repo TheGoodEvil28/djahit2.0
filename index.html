@@ -22,7 +22,7 @@
       justify-content: center;
       align-items: center;
       gap: 10px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
@@ -46,6 +46,14 @@
       background-color: #0056b3;
     }
 
+    .loading {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #007BFF;
+      display: none;
+    }
+
     .result-box {
       background: #fff;
       padding: 20px;
@@ -53,6 +61,7 @@
       box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
       max-width: 800px;
       margin: 0 auto 30px auto;
+      display: none;
     }
 
     img {
@@ -83,14 +92,6 @@
       background: #f9f9f9;
     }
 
-    .loading {
-      display: none;
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-      color: #007BFF;
-    }
-
     @media (max-width: 600px) {
       #uploadForm {
         flex-direction: column;
@@ -109,24 +110,24 @@
 
 <div class="loading" id="loading">Processing...</div>
 
-<div id="result" class="result-box" style="display:none;">
+<div id="result" class="result-box">
   <h3>Uploaded Image</h3>
   <img id="uploadedImage" src="" alt="Uploaded Image">
 
   <h3>Clothing Detected</h3>
-  <table id="clothingTable" style="display:none;">
+  <table id="clothingTable">
     <thead><tr><th>Name</th><th>Confidence</th><th>Parents</th></tr></thead>
     <tbody></tbody>
   </table>
 
   <h3>Defects Detected</h3>
-  <table id="defectsTable" style="display:none;">
+  <table id="defectsTable">
     <thead><tr><th>Name</th><th>Confidence</th></tr></thead>
     <tbody></tbody>
   </table>
 </div>
 
- <script>
+<script>
 const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
 
 const form = document.getElementById('uploadForm');
@@ -134,65 +135,48 @@ const uploadedImage = document.getElementById('uploadedImage');
 const resultBox = document.getElementById('result');
 const clothingTable = document.getElementById('clothingTable');
 const defectsTable = document.getElementById('defectsTable');
+const loading = document.getElementById('loading');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const fileInput = document.getElementById('fileInput');
   if (!fileInput.files.length) return alert('Select a file');
-
+  
   const file = fileInput.files[0];
+  loading.style.display = 'block';
+  resultBox.style.display = 'none';
 
   try {
-    // 1) Generate presigned PUT URL with cache-busting
-    const res1 = await fetch(`${API_BASE}/generate-upload-url?ts=${Date.now()}`, {
+    // 1) Generate presigned URL
+    const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filename: file.name, contentType: file.type })
     });
-
-    const text1 = await res1.text();
-    if (!res1.ok) throw new Error(`generate upload url failed: ${res1.status} ${text1 || 'No body returned'}`);
-    
-    const { uploadUrl, key } = JSON.parse(text1);
+    if (!res1.ok) throw new Error(`generate upload url failed: ${res1.status}`);
+    const { uploadUrl, key } = await res1.json();
 
     // 2) Upload file to S3 using presigned URL
-    const putRes = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: { 'Content-Type': file.type, 'Cache-Control': 'no-cache' }
-    });
+    const putRes = await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+    if (!putRes.ok) throw new Error(`upload failed: ${putRes.status}`);
 
-    if (!putRes.ok) {
-      const textPut = await putRes.text();
-      throw new Error(`upload failed: ${putRes.status} ${textPut || 'No body returned'}`);
-    }
-
-    // 3) Analyze image
-    const res2 = await fetch(`${API_BASE}/analyze?ts=${Date.now()}`, {
+    // 3) Analyze the uploaded image
+    const res2 = await fetch(`${API_BASE}/analyze`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key })
     });
+    if (!res2.ok) throw new Error(`analyze failed: ${res2.status}`);
+    const data = await res2.json();
 
-    const text2 = await res2.text();
-    if (!res2.ok) throw new Error(`analyze failed: ${res2.status} ${text2 || 'No body returned'}`);
-
-    const data = JSON.parse(text2);
-
-    // 4) Display image and results
+    // 4) Display image & tables
     uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}`;
     resultBox.style.display = 'block';
 
     // Clothing
     const clothingBody = clothingTable.querySelector('tbody');
     clothingBody.innerHTML = '';
-    if (data.clothing && data.clothing.length) {
+    if (data.clothing?.length) {
       clothingTable.style.display = 'table';
       data.clothing.forEach(item => {
         const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
@@ -205,7 +189,7 @@ form.addEventListener('submit', async (e) => {
     // Defects
     const defectsBody = defectsTable.querySelector('tbody');
     defectsBody.innerHTML = '';
-    if (data.defects && data.defects.length) {
+    if (data.defects?.length) {
       defectsTable.style.display = 'table';
       data.defects.forEach(item => {
         defectsBody.insertAdjacentHTML('beforeend', `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
@@ -215,6 +199,8 @@ form.addEventListener('submit', async (e) => {
   } catch (err) {
     alert('Error: ' + (err.message || err));
     console.error(err);
+  } finally {
+    loading.style.display = 'none';
   }
 });
 </script>
