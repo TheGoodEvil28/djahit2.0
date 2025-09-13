@@ -1,103 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Djahit Image Upload & Analysis</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f7f8fa;
-      color: #333;
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    #uploadForm {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    #fileInput {
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #007BFF;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    .loading {
-      text-align: center;
-      margin-bottom: 20px;
-      font-weight: bold;
-      color: #007BFF;
-      display: none;
-    }
-
-    .result-box {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
-      max-width: 800px;
-      margin: 0 auto 30px auto;
-      display: none;
-    }
-
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      margin-bottom: 15px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-      font-size: 0.95em;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
-    }
-
-    th {
-      background: #f0f0f0;
-    }
-
-    tr:hover {
-      background: #f9f9f9;
-    }
-
-    @media (max-width: 600px) {
-      #uploadForm {
-        flex-direction: column;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Djahit Image Upload & Analysis</title>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:20px; background:#f7f8fa; color:#333; }
+  h2 { text-align:center; margin-bottom:20px; }
+  #uploadForm { display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+  #fileInput { padding:8px; border-radius:5px; border:1px solid #ccc; }
+  button { background-color:#007BFF; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; transition:0.2s; }
+  button:hover { background-color:#0056b3; }
+  .loading { text-align:center; margin-bottom:20px; font-weight:bold; color:#007BFF; display:none; }
+  .result-box { background:#fff; padding:20px; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); max-width:800px; margin:0 auto 30px auto; display:none; }
+  img { max-width:100%; border-radius:8px; border:1px solid #ddd; margin-bottom:15px; }
+  table { border-collapse:collapse; width:100%; margin-top:10px; font-size:0.95em; }
+  th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+  th { background:#f0f0f0; }
+  tr:hover { background:#f9f9f9; }
+  @media(max-width:600px){ #uploadForm{ flex-direction:column; } }
+</style>
 </head>
 <body>
 
@@ -145,9 +66,12 @@ form.addEventListener('submit', async (e) => {
   const file = fileInput.files[0];
   loading.style.display = 'block';
   resultBox.style.display = 'none';
+  console.clear();
+  console.log('Starting upload process...');
 
   try {
-    // 1) Generate presigned PUT URL
+    // 1️⃣ Generate presigned PUT URL
+    console.log('Step 1: Generating upload URL...');
     const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -155,16 +79,20 @@ form.addEventListener('submit', async (e) => {
     });
     if (!res1.ok) throw new Error('Failed to generate upload URL');
     const { uploadUrl, key } = await res1.json();
+    console.log('Upload URL generated. Key:', key);
 
-    // 2) Upload to S3
+    // 2️⃣ Upload file to S3
+    console.log('Step 2: Uploading to S3...');
     const putRes = await fetch(uploadUrl, {
       method: 'PUT',
       body: file,
       headers: { 'Content-Type': file.type, 'Cache-Control': 'no-cache' }
     });
     if (!putRes.ok) throw new Error('Upload failed');
+    console.log('Upload complete');
 
-    // 3) Analyze uploaded image
+    // 3️⃣ Analyze uploaded image
+    console.log('Step 3: Analyzing image...');
     const res2 = await fetch(`${API_BASE}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -172,9 +100,10 @@ form.addEventListener('submit', async (e) => {
     });
     if (!res2.ok) throw new Error('Analyze failed');
     const data = await res2.json();
+    console.log('Analyze result:', data);
 
-    // 4) Display uploaded image directly from S3
-    // Generate presigned GET URL
+    // 4️⃣ Get presigned GET URL
+    console.log('Step 4: Getting presigned GET URL...');
     const res3 = await fetch(`${API_BASE}/get-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -182,11 +111,13 @@ form.addEventListener('submit', async (e) => {
     });
     if (!res3.ok) throw new Error('Failed to get image URL');
     const { getUrl } = await res3.json();
-    
+    console.log('Presigned GET URL:', getUrl);
+
+    // 5️⃣ Display image
     uploadedImage.src = getUrl;
+    resultBox.style.display = 'block';
 
-
-    // Populate clothing table
+    // 6️⃣ Populate clothing table
     const clothingBody = clothingTable.querySelector('tbody');
     clothingBody.innerHTML = '';
     if (data.clothing?.length) {
@@ -198,7 +129,7 @@ form.addEventListener('submit', async (e) => {
       });
     } else clothingTable.style.display = 'none';
 
-    // Populate defects table
+    // 7️⃣ Populate defects table
     const defectsBody = defectsTable.querySelector('tbody');
     defectsBody.innerHTML = '';
     if (data.defects?.length) {
@@ -217,7 +148,6 @@ form.addEventListener('submit', async (e) => {
   }
 });
 </script>
-
 
 </body>
 </html>
