@@ -147,32 +147,22 @@ form.addEventListener('submit', async (e) => {
   resultBox.style.display = 'none';
 
   try {
-    // 1) Generate presigned URL
+    // 1) Generate presigned PUT URL
     const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filename: file.name, contentType: file.type })
     });
-
-    if (!res1.ok) {
-      const errText = await res1.text();
-      throw new Error(`generate upload url failed: ${res1.status} ${errText}`);
-    }
+    if (!res1.ok) throw new Error('Failed to generate upload URL');
     const { uploadUrl, key } = await res1.json();
 
-    // 2) Upload file to S3 using presigned URL
+    // 2) Upload to S3
     const putRes = await fetch(uploadUrl, {
       method: 'PUT',
       body: file,
-      headers: {
-        'Content-Type': file.type,
-        'Cache-Control': 'no-cache'
-      }
+      headers: { 'Content-Type': file.type, 'Cache-Control': 'no-cache' }
     });
-    if (!putRes.ok) {
-      const errText = await putRes.text();
-      throw new Error(`upload failed: ${putRes.status} ${errText}`);
-    }
+    if (!putRes.ok) throw new Error('Upload failed');
 
     // 3) Analyze uploaded image
     const res2 = await fetch(`${API_BASE}/analyze`, {
@@ -180,14 +170,19 @@ form.addEventListener('submit', async (e) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key })
     });
-    if (!res2.ok) {
-      const errText = await res2.text();
-      throw new Error(`analyze failed: ${res2.status} ${errText}`);
-    }
+    if (!res2.ok) throw new Error('Analyze failed');
     const data = await res2.json();
 
-    // 4) Display image with cache-busting
-    uploadedImage.src = `https://djahit-image-upload-bucket.s3.us-east-1.amazonaws.com/${encodeURIComponent(key)}?t=${Date.now()}`;
+    // 4) Generate presigned GET URL for image
+    const res3 = await fetch(`${API_BASE}/get-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key })
+    });
+    if (!res3.ok) throw new Error('Failed to get image URL');
+    const { url } = await res3.json();
+
+    uploadedImage.src = url;
     resultBox.style.display = 'block';
 
     // Populate clothing table
@@ -198,8 +193,7 @@ form.addEventListener('submit', async (e) => {
       data.clothing.forEach(item => {
         const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
         clothingBody.insertAdjacentHTML('beforeend',
-          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td><td>${parents}</td></tr>`
-        );
+          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td><td>${parents}</td></tr>`);
       });
     } else clothingTable.style.display = 'none';
 
@@ -210,8 +204,7 @@ form.addEventListener('submit', async (e) => {
       defectsTable.style.display = 'table';
       data.defects.forEach(item => {
         defectsBody.insertAdjacentHTML('beforeend',
-          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`
-        );
+          `<tr><td>${item.Name}</td><td>${item.Confidence.toFixed(1)}%</td></tr>`);
       });
     } else defectsTable.style.display = 'none';
 
