@@ -40,23 +40,40 @@
                     <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
                         <h3 class="text-base md:text-lg font-normal border-b pb-2 border-[#A3B18A] text-button-green mb-4">Isi Beberapa Detail di Bawah</h3>                        
                         <div class="mb-6 text-right">
-                            <h4 class="text-sm md:text-base font-medium text-text-dark mb-2 text-left">Media Upload</h4>
-                            <p class="text-xs md:text-sm text-[#6D6D6D] mb-3 text-left">Add your documents here.</p>                            
-                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 text-center hover:border-djahit-orange transition-colors cursor-pointer" id="uploadArea">
-                                <div class="mb-3 md:mb-4">
-                                    <svg class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-gray-600 mb-2 text-sm md:text-base">Drag your image(s) or <span class="text-button-green font-medium cursor-pointer hover:underline">browse</span></p>
-                                <p class="text-xs text-gray-500">Max 10 MB files are allowed</p>
-                                <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
-                            </div>
-                            <p class="text-xs text-gray-500 mt-2 text-left">Only support image files (JPG, PNG, GIF, etc.)</p>                            
-                            <button type="button" class="mt-4 w-full md:w-auto text-center lg:text-right bg-button-green text-white px-4 md:px-6 py-2 rounded-md hover:opacity-90 transition-opacity text-sm md:text-base">
-                                Simpan
-                            </button>
-                        </div>                        
+    <h4 class="text-sm md:text-base font-medium text-text-dark mb-2 text-left">Media Upload</h4>
+    <p class="text-xs md:text-sm text-[#6D6D6D] mb-3 text-left">Add your documents here.</p>                            
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 text-center hover:border-djahit-orange transition-colors cursor-pointer" id="uploadArea">
+        <div class="mb-3 md:mb-4">
+            <svg class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+        </div>
+        <p class="text-gray-600 mb-2 text-sm md:text-base">Drag your image(s) or <span class="text-button-green font-medium cursor-pointer hover:underline">browse</span></p>
+        <p class="text-xs text-gray-500">Max 10 MB files are allowed</p>
+        <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
+    </div>
+    <p class="text-xs text-gray-500 mt-2 text-left">Only support image files (JPG, PNG, GIF, etc.)</p>                            
+</div>
+
+<!-- Loading & result -->
+<div id="loading" class="text-center font-bold text-button-green hidden mt-4">Processing...</div>
+<div id="result" class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm mt-4 hidden">
+    <h3 class="font-semibold text-button-green mb-2">Uploaded Image</h3>
+    <img id="uploadedImage" src="" alt="Uploaded Image" class="w-full rounded-lg mb-4">
+    
+    <h3 class="font-semibold text-button-green mb-2">Clothing Detected</h3>
+    <table class="w-full border border-gray-300 mb-4" id="clothingTable">
+        <thead><tr class="bg-gray-100"><th class="p-2 border">Name</th><th class="p-2 border">Confidence</th><th class="p-2 border">Parents</th></tr></thead>
+        <tbody></tbody>
+    </table>
+
+    <h3 class="font-semibold text-button-green mb-2">Defects Detected</h3>
+    <table class="w-full border border-gray-300" id="defectsTable">
+        <thead><tr class="bg-gray-100"><th class="p-2 border">Name</th><th class="p-2 border">Confidence</th></tr></thead>
+        <tbody></tbody>
+    </table>
+</div>
+                     
                         <div class="bg-reminder rounded-[8px] p-3 md:p-4 mb-6">
                             <div class="flex items-start md:items-center">
                                 <div class="flex-shrink-0">
@@ -220,6 +237,12 @@
     </main>
     <div id="footer-container"></div>
     <script>
+        const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
+        const loading = document.getElementById('loading');
+        const resultBox = document.getElementById('result');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const clothingTable = document.getElementById('clothingTable');
+        const defectsTable = document.getElementById('defectsTable');
         document.addEventListener('DOMContentLoaded', function() {
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');
@@ -253,35 +276,84 @@
             fileInput.addEventListener('change', (e) => {
                 handleFiles(e.target.files);
             });
-            function handleFiles(files) {
-                const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-                if (imageFiles.length === 0) {
-                    alert('Please upload image files only (JPG, PNG, GIF, etc.)');
-                    return;
-                }
-                imageFiles.forEach((file, index) => {
-                    if (file.size > 10 * 1024 * 1024) {
-                        alert(`File ${file.name} is too large. Maximum size is 10MB.`);
-                        return;
-                    }
-                    const targetSlot = fileInput.getAttribute('data-target-slot');
-                    let slotIndex;
-                    if (targetSlot !== null) {
-                        slotIndex = parseInt(targetSlot);
-                        fileInput.removeAttribute('data-target-slot');
-                    } else {
-                        slotIndex = uploadedImages.findIndex(img => !img);
-                        if (slotIndex === -1 && uploadedImages.length < 4) {
-                            slotIndex = uploadedImages.length;
-                        }
-                    }
-                    if (slotIndex >= 4) {
-                        alert('Maximum 4 images allowed.');
-                        return;
-                    }
-                    displayImage(file, slotIndex);
+            async function handleFiles(files) {
+    const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+    if (imageFiles.length === 0) {
+        alert('Please upload image files only (JPG, PNG, GIF, etc.)');
+        return;
+    }
+
+    for (let i = 0; i < imageFiles.length; i++) {
+        const file = imageFiles[i];
+        if (file.size > 10 * 1024 * 1024) {
+            alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+            continue;
+        }
+
+        try {
+            loading.classList.remove('hidden');
+            resultBox.classList.add('hidden');
+
+            // 1) Generate presigned PUT URL
+            const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.name, contentType: file.type })
+            });
+            const { uploadUrl, key } = await res1.json();
+
+            // 2) Upload to S3
+            await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+
+            // 3) Analyze image
+            const res2 = await fetch(`${API_BASE}/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+            const data = await res2.json();
+
+            // 4) Get image URL
+            const res3 = await fetch(`${API_BASE}/get-url`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+            const { getUrl } = await res3.json();
+
+            // Display image & analysis
+            uploadedImage.src = getUrl;
+            resultBox.classList.remove('hidden');
+
+            // Clothing table
+            const clothingBody = clothingTable.querySelector('tbody');
+            clothingBody.innerHTML = '';
+            if (data.clothing?.length) {
+                data.clothing.forEach(item => {
+                    const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
+                    clothingBody.insertAdjacentHTML('beforeend',
+                        `<tr><td class="p-2 border">${item.Name}</td><td class="p-2 border">${item.Confidence.toFixed(1)}%</td><td class="p-2 border">${parents}</td></tr>`);
                 });
-            }            
+            } else clothingBody.innerHTML = `<tr><td class="p-2 border" colspan="3">No clothing detected</td></tr>`;
+
+            // Defects table
+            const defectsBody = defectsTable.querySelector('tbody');
+            defectsBody.innerHTML = '';
+            if (data.defects?.length) {
+                data.defects.forEach(item => {
+                    defectsBody.insertAdjacentHTML('beforeend',
+                        `<tr><td class="p-2 border">${item.Name}</td><td class="p-2 border">${item.Confidence.toFixed(1)}%</td></tr>`);
+                });
+            } else defectsBody.innerHTML = `<tr><td class="p-2 border" colspan="2">No defects detected</td></tr>`;
+
+        } catch (err) {
+            console.error(err);
+            alert('Error uploading/analyzing: ' + err.message);
+        } finally {
+            loading.classList.add('hidden');
+        }
+    }
+}        
             function displayImage(file, slotIndex) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
