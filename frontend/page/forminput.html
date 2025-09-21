@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Djahit - Input Order</title>
+    <title>Djahit - Upload Images</title>
     <link rel="icon" type="image/x-icon" href="../../frontend/assets/img/logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,14 +14,15 @@
                 extend: {
                     colors: {
                         'cream': '#E9E4D4',
-                        'section-white' : '#F4F2E9',
+                        'section-white': '#F4F2E9',
                         'djahit-orange': '#E07A5F',
                         'text-dark': '#A85C47',
                         'button-green': '#7A8568',
                         'sage-green': '#8B9D6F',
                         'text-white': '#F6F7F3',
                         'text-radio': '#393E30',
-                        'reminder': '#F5D6CD'
+                        'reminder': '#F5D6CD',
+                        'font-sec': '#414141'
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif']
@@ -38,475 +39,310 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
                 <div class="space-y-6">
                     <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-normal border-b pb-2 border-[#A3B18A] text-button-green mb-4">Isi Beberapa Detail di Bawah</h3>                        
-                        <div class="mb-6 text-right">
-    <h4 class="text-sm md:text-base font-medium text-text-dark mb-2 text-left">Media Upload</h4>
-    <p class="text-xs md:text-sm text-[#6D6D6D] mb-3 text-left">Add your documents here.</p>                            
-    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 text-center hover:border-djahit-orange transition-colors cursor-pointer" id="uploadArea">
-        <div class="mb-3 md:mb-4">
-            <svg class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-            </svg>
-        </div>
-        <p class="text-gray-600 mb-2 text-sm md:text-base">Drag your image(s) or <span class="text-button-green font-medium cursor-pointer hover:underline">browse</span></p>
-        <p class="text-xs text-gray-500">Max 10 MB files are allowed</p>
-        <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
-    </div>
-    <p class="text-xs text-gray-500 mt-2 text-left">Only support image files (JPG, PNG, GIF, etc.)</p>                            
-</div>
-
-<!-- Loading & result -->
-<div id="loading" class="text-center font-bold text-button-green hidden mt-4">Processing...</div>
-<div id="result" class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm mt-4 hidden">
-    <h3 class="font-semibold text-button-green mb-2">Uploaded Image</h3>
-    <img id="uploadedImage" src="" alt="Uploaded Image" class="w-full rounded-lg mb-4">
-    
-    <h3 class="font-semibold text-button-green mb-2">Clothing Detected</h3>
-    <table class="w-full border border-gray-300 mb-4" id="clothingTable">
-        <thead><tr class="bg-gray-100"><th class="p-2 border">Name</th><th class="p-2 border">Confidence</th><th class="p-2 border">Parents</th></tr></thead>
-        <tbody></tbody>
-    </table>
-
-    <h3 class="font-semibold text-button-green mb-2">Defects Detected</h3>
-    <table class="w-full border border-gray-300" id="defectsTable">
-        <thead><tr class="bg-gray-100"><th class="p-2 border">Name</th><th class="p-2 border">Confidence</th></tr></thead>
-        <tbody></tbody>
-    </table>
-</div>
-                     
-                        <div class="bg-reminder rounded-[8px] p-3 md:p-4 mb-6">
-                            <div class="flex items-start md:items-center">
-                                <div class="flex-shrink-0">
-                                    <img src="../../frontend/assets/img/reminder.svg" alt="himbauan vector" class="w-4 h-4 md:w-5 md:h-5">
+                        <h3 class="text-base md:text-lg font-normal border-b pb-2 border-[#A3B18A] text-button-green mb-4">Upload Your Images</h3>                        
+                        
+                        <!-- Upload Area -->
+                        <div class="mb-6">
+                            <h4 class="text-sm md:text-base font-medium text-text-dark mb-2">Media Upload</h4>
+                            <p class="text-xs md:text-sm text-[#6D6D6D] mb-3">Add your clothing images here.</p>                            
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 lg:p-8 text-center hover:border-djahit-orange transition-colors cursor-pointer" id="uploadArea">
+                                <div class="mb-3 md:mb-4">
+                                    <svg class="w-8 h-8 md:w-10 lg:w-12 md:h-10 lg:h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
                                 </div>
-                                <div class="ml-3">
-                                    <p class="text-xs md:text-sm text-radio leading-relaxed">
-                                        Berikan foto pakainmu tampak depan, belakang dan poin letak kerusakan
-                                    </p>
-                                </div>
+                                <p class="text-gray-600 mb-2 text-sm md:text-base">Drag your image(s) or <span class="text-button-green font-medium cursor-pointer hover:underline">browse</span></p>
+                                <p class="text-xs text-gray-500">Max 1 MB files are allowed</p>
+                                <input type="file" id="fileInput" class="hidden" multiple accept="image/*">
                             </div>
-                        </div>                        
+                            <p class="text-xs text-gray-500 mt-2">Only support image files (JPG, PNG, GIF, etc.)</p>                            
+                        </div>
+
+                        <!-- Image Preview Grid -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 justify-items-center mb-6" id="imagePreviewGrid">
-                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot" data-slot="0">
-                                <img src="../../frontend/assets/img/img-vector.svg" alt="img vector" class="w-6 h-6 md:w-8 md:h-8 placeholder-icon">
+                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
                             </div>
-                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot" data-slot="1">
-                                <img src="../../frontend/assets/img/img-vector.svg" alt="img vector" class="w-6 h-6 md:w-8 md:h-8 placeholder-icon">
+                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
                             </div>
-                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot" data-slot="2">
-                                <img src="../../frontend/assets/img/img-vector.svg" alt="img vector" class="w-6 h-6 md:w-8 md:h-8 placeholder-icon">
+                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
                             </div>
-                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot" data-slot="3">
-                                <img src="../../frontend/assets/img/img-vector.svg" alt="img vector" class="w-6 h-6 md:w-8 md:h-8 placeholder-icon">
+                            <div class="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-djahit-orange transition-colors w-full max-w-[108px] image-slot">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-semibold text-button-green mb-4 border-b-[0.5px] border-solid border-[#A3B18A] pb-2">Hasil Deskripsi Scan Pakaian</h3>
-                        <div class="bg-transparent border border-[#A3B18A] rounded-lg p-4 min-h-[100px] md:min-h-[120px] flex items-center justify-center">
-                            <p class="text-[#69675F] text-center text-sm md:text-base">Hasil deskripsi akan muncul di sini setelah gambar terupload.</p>
+
+                        <!-- Upload Status -->
+                        <div id="uploadStatus" class="hidden">
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                                <div class="flex items-center">
+                                    <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    <p class="text-green-700 font-medium">Images uploaded successfully!</p>
+                                </div>
+                                <p class="text-green-600 text-sm mt-1" id="uploadedCount">0 images processed</p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 mt-6">
+                            <button type="button" class="flex-1 bg-transparent border border-djahit-orange text-djahit-orange py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-djahit-orange hover:text-white transition-colors font-medium text-sm md:text-base" onclick="goBack()">
+                                Back
+                            </button>
+                            <button type="button" id="proceedBtn" class="flex-1 bg-gray-400 text-white py-2 md:py-3 px-4 md:px-6 rounded-lg font-medium text-sm md:text-base cursor-not-allowed" disabled>
+                                Proceed to Analysis
+                            </button>
                         </div>
                     </div>
                 </div>
-                <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                    <form class="space-y-4 md:space-y-6" id="mainForm">
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-3">
-                                Jenis kerusakan*
-                            </label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-2 md:gap-3">
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="damage_type" value="sobek" class="text-djahit-orange accent-[#E07A5F] focus:ring-djahit-orange cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Sobek</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="damage_type" value="kancing_hilang" class="text-djahit-orange accent-[#E07A5F] focus:ring-djahit-orange cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Kancing Hilang</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="damage_type" value="resleting_rusak" class="text-djahit-orange accent-[#E07A5F] focus:ring-djahit-orange cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Resleting Rusak</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="damage_type" value="lainnya" class="text-djahit-orange accent-[#E07A5F] focus:ring-djahit-orange cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Lainnya</span>
-                                </label>
-                            </div>
-                        </div>                        
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Deskripsi jenis kerusakan lainnya
-                            </label>
-                            <textarea 
-                                name="damage_description"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent resize-none h-16 md:h-20 text-sm md:text-base"
-                            ></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-3">
-                                Jenis / tipe pakaian*
-                            </label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-2 md:gap-3">
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="clothing_type" value="baju" class="text-djahit-orange focus:ring-djahit-orange accent-[#E07A5F] cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Baju</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="clothing_type" value="celana" class="text-djahit-orange focus:ring-djahit-orange accent-[#E07A5F] cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Celana</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="clothing_type" value="outer" class="text-djahit-orange focus:ring-djahit-orange accent-[#E07A5F] cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Outer</span>
-                                </label>
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="clothing_type" value="lainnya" class="text-djahit-orange focus:ring-djahit-orange accent-[#E07A5F] cursor-pointer">
-                                    <span class="text-xs md:text-sm text-radio">Lainnya</span>
-                                </label>
+
+                <!-- Info Panel -->
+                <div class="space-y-6">
+                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+                        <h3 class="text-base md:text-lg font-medium text-button-green mb-4">Instructions</h3>
+                        <div class="space-y-3 text-sm text-gray-700">
+                            <p>Please upload clear images of your clothing item:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Front view of the garment</li>
+                                <li>Back view of the garment</li>
+                                <li>Close-up of any damage areas</li>
+                                <li>Additional detail shots if needed</li>
+                            </ul>
+                            <div class="bg-reminder rounded-lg p-3 mt-4">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-djahit-orange flex-shrink-0 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <p class="text-xs text-text-radio">
+                                        Make sure images are well-lit and show damage clearly for best analysis results.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Deskripsi jenis/tipe kerusakan lainnya
-                            </label>
-                            <textarea 
-                                name="clothing_description"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent resize-none h-16 md:h-20 text-sm md:text-base"
-                            ></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Ukuran Pakaian*
-                            </label>
-                            <input 
-                                type="text"
-                                name="size"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Lokasi Pick Up*
-                            </label>
-                            <input 
-                                type="text"
-                                name="location"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Referensi warna benang jahitan
-                            </label>
-                            <input 
-                                type="text"
-                                name="thread_color"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base"
-                            >
-                        </div>
-                        <div>
-                            <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
-                                Masukkan kode voucher
-                            </label>
-                            <input 
-                                type="text"
-                                name="voucher_code"
-                                placeholder="Inputan Pengguna"
-                                class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base"
-                            >
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4 md:pt-6">
-                            <button type="button" class="flex-1 bg-transparent border border-djahit-orange text-djahit-orange py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-djahit-orange hover:text-white transition-colors font-medium text-sm md:text-base"
-                            onclick="window.location='../../index.html';">
-                                Kembali
-                            </button>
-                            <button type="submit" class="flex-1 bg-djahit-orange text-white py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-cream hover:text-djahit-orange hover:border-djahit-orange hover:border transition-colors font-medium text-sm md:text-base">
-                                Konfirmasi
-                            </button>
-                        </div>
-                    </form>
-                </div>                
+                    </div>
+                </div>
             </div>
         </div>
     </main>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-djahit-orange mx-auto mb-4"></div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Uploading Images</h3>
+                <p class="text-gray-600 text-sm" id="loadingText">Processing your images...</p>
+                <div class="mt-4">
+                    <div class="bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-djahit-orange h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2" id="progressText">0%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="footer-container"></div>
+
     <script>
         const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
-        const loading = document.getElementById('loading');
-        const resultBox = document.getElementById('result');
-        const uploadedImage = document.getElementById('uploadedImage');
-        const clothingTable = document.getElementById('clothingTable');
-        const defectsTable = document.getElementById('defectsTable');
+        let uploadedImages = [];
+        let uploadedKeys = [];
+
         document.addEventListener('DOMContentLoaded', function() {
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');
+            
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
             const imageSlots = document.querySelectorAll('.image-slot');
-            let uploadedImages = [];
+            const proceedBtn = document.getElementById('proceedBtn');
+
+            // Upload area click handler
             uploadArea.addEventListener('click', () => {
                 fileInput.click();
             });
+
+            // Individual slot click handlers
             imageSlots.forEach((slot, index) => {
                 slot.addEventListener('click', (e) => {
-                    e.stopPropagation(); 
-                    fileInput.click();
+                    e.stopPropagation();
                     fileInput.setAttribute('data-target-slot', index);
+                    fileInput.click();
                 });
-            });            
+            });
+
+            // Drag and drop handlers
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 uploadArea.classList.add('border-djahit-orange');
             });
+
             uploadArea.addEventListener('dragleave', () => {
                 uploadArea.classList.remove('border-djahit-orange');
             });
+
             uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
                 uploadArea.classList.remove('border-djahit-orange');
                 const files = e.dataTransfer.files;
                 handleFiles(files);
-            });            
+            });
+
+            // File input change handler
             fileInput.addEventListener('change', (e) => {
                 handleFiles(e.target.files);
             });
+
             async function handleFiles(files) {
-    const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
-    if (imageFiles.length === 0) {
-        alert('Please upload image files only (JPG, PNG, GIF, etc.)');
-        return;
-    }
+                const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+                
+                if (imageFiles.length === 0) {
+                    alert('Please upload image files only (JPG, PNG, GIF, etc.)');
+                    return;
+                }
 
-    for (let i = 0; i < imageFiles.length; i++) {
-        const file = imageFiles[i];
-        if (file.size > 10 * 1024 * 1024) {
-            alert(`File ${file.name} is too large. Maximum size is 10MB.`);
-            continue;
-        }
+                showLoadingModal();
 
-        try {
-            loading.classList.remove('hidden');
-            resultBox.classList.add('hidden');
+                try {
+                    for (let i = 0; i < imageFiles.length; i++) {
+                        const file = imageFiles[i];
+                        
+                        if (file.size > 1 * 1024 * 1024) {
+                            alert(`File ${file.name} is too large. Maximum size is 1MB.`);
+                            continue;
+                        }
 
-            // 1) Generate presigned PUT URL
-            const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename: file.name, contentType: file.type })
-            });
-            const { uploadUrl, key } = await res1.json();
+                        updateProgress((i / imageFiles.length) * 100, `Uploading ${file.name}...`);
 
-            // 2) Upload to S3
-            await fetch(uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+                        // 1) Generate presigned PUT URL
+                        const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ filename: file.name, contentType: file.type })
+                        });
+                        const { uploadUrl, key } = await res1.json();
 
-            // 3) Analyze image
-            const res2 = await fetch(`${API_BASE}/analyze`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key })
-            });
-            const data = await res2.json();
+                        // 2) Upload to S3
+                        await fetch(uploadUrl, { 
+                            method: 'PUT', 
+                            body: file, 
+                            headers: { 'Content-Type': file.type } 
+                        });
 
-            // 4) Get image URL
-            const res3 = await fetch(`${API_BASE}/get-url`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key })
-            });
-            const { getUrl } = await res3.json();
+                        // Store the key for later use
+                        uploadedKeys.push(key);
 
-            // Display image & analysis
-            uploadedImage.src = getUrl;
-            resultBox.classList.remove('hidden');
+                        // Display preview
+                        displayImagePreview(file, i);
+                        
+                        uploadedImages.push({
+                            name: file.name,
+                            key: key,
+                            size: file.size
+                        });
+                    }
 
-            // Clothing table
-            const clothingBody = clothingTable.querySelector('tbody');
-            clothingBody.innerHTML = '';
-            if (data.clothing?.length) {
-                data.clothing.forEach(item => {
-                    const parents = (item.Parents || []).map(p => p.Name).join(', ') || '-';
-                    clothingBody.insertAdjacentHTML('beforeend',
-                        `<tr><td class="p-2 border">${item.Name}</td><td class="p-2 border">${item.Confidence.toFixed(1)}%</td><td class="p-2 border">${parents}</td></tr>`);
-                });
-            } else clothingBody.innerHTML = `<tr><td class="p-2 border" colspan="3">No clothing detected</td></tr>`;
+                    updateProgress(100, 'Upload complete!');
+                    
+                    setTimeout(() => {
+                        hideLoadingModal();
+                        showUploadSuccess();
+                        enableProceedButton();
+                    }, 1000);
 
-            // Defects table
-            const defectsBody = defectsTable.querySelector('tbody');
-            defectsBody.innerHTML = '';
-            if (data.defects?.length) {
-                data.defects.forEach(item => {
-                    defectsBody.insertAdjacentHTML('beforeend',
-                        `<tr><td class="p-2 border">${item.Name}</td><td class="p-2 border">${item.Confidence.toFixed(1)}%</td></tr>`);
-                });
-            } else defectsBody.innerHTML = `<tr><td class="p-2 border" colspan="2">No defects detected</td></tr>`;
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    hideLoadingModal();
+                    alert('Error uploading images: ' + error.message);
+                }
+            }
 
-        } catch (err) {
-            console.error(err);
-            alert('Error uploading/analyzing: ' + err.message);
-        } finally {
-            loading.classList.add('hidden');
-        }
-    }
-}        
-            function displayImage(file, slotIndex) {
+            function displayImagePreview(file, index) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const imageSlot = document.querySelector(`[data-slot="${slotIndex}"]`);
-                    const img = imageSlot.querySelector('img');
-                    img.src = e.target.result;
-                    img.alt = file.name;
-                    img.className = 'w-full h-full object-cover rounded-lg';
-                    img.classList.remove('placeholder-icon');
-                    imageSlot.classList.remove('border-dashed', 'border-gray-300');
-                    imageSlot.classList.add('border-solid', 'border-djahit-orange');
-                    imageSlot.innerHTML = `
-                        <div class="relative w-full h-full">
-                            <img src="${e.target.result}" alt="${file.name}" class="w-full h-full object-cover rounded-lg">
-                            <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors remove-image" data-slot="${slotIndex}">×</button>
-                        </div>
-                    `;
-                    uploadedImages[slotIndex] = file;
-                    console.log(`Image ${file.name} uploaded to slot ${slotIndex}`);
+                    const imageSlots = document.querySelectorAll('.image-slot');
+                    if (index < imageSlots.length) {
+                        const slot = imageSlots[index];
+                        slot.innerHTML = `
+                            <div class="relative w-full h-full">
+                                <img src="${e.target.result}" alt="${file.name}" class="w-full h-full object-cover rounded-lg">
+                                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg">
+                                    <div class="truncate">${file.name}</div>
+                                </div>
+                                <div class="absolute top-1 right-1">
+                                    <div class="bg-djahit-orange text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                                        ${index + 1}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        slot.classList.remove('border-dashed', 'border-gray-300');
+                        slot.classList.add('border-solid', 'border-djahit-orange');
+                    }
                 };
                 reader.readAsDataURL(file);
             }
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('remove-image')) {
-                    const slotIndex = parseInt(e.target.getAttribute('data-slot'));
-                    removeImage(slotIndex);
-                }
-            });
-            function removeImage(slotIndex) {
-                const imageSlot = document.querySelector(`[data-slot="${slotIndex}"]`);
-                imageSlot.innerHTML = `
-                    <img src="../../frontend/assets/img/img-vector.svg" alt="img vector" class="w-6 h-6 md:w-8 md:h-8 placeholder-icon">
-                `;
-                imageSlot.classList.remove('border-solid', 'border-djahit-orange');
-                imageSlot.classList.add('border-dashed', 'border-gray-300');
-                uploadedImages[slotIndex] = null;                
+
+            function showLoadingModal() {
+                document.getElementById('loadingModal').classList.remove('hidden');
             }
-            const form = document.getElementById('mainForm');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();                    
-                    const damageType = document.querySelector('input[name="damage_type"]:checked');
-                    const clothingType = document.querySelector('input[name="clothing_type"]:checked');
-                    const size = document.querySelector('input[name="size"]').value;
-                    const location = document.querySelector('input[name="location"]').value;
-                    const imageCount = uploadedImages.filter(img => img).length;
-                    if (!damageType || !clothingType || !size.trim() || !location.trim()) {
-                        alert('Mohon lengkapi semua field yang wajib diisi (*)');
-                        return;
-                    }
-                    const formData = {
-                        damageType: damageType.value,
-                        clothingType: clothingType.value,
-                        damageDescription: document.querySelector('textarea[name="damage_description"]').value,
-                        clothingDescription: document.querySelector('textarea[name="clothing_description"]').value,
-                        size: size,
-                        location: location,
-                        threadColor: document.querySelector('input[name="thread_color"]').value,
-                        voucherCode: document.querySelector('input[name="voucher_code"]').value,
-                        images: uploadedImages.filter(img => img).map(img => img.name),
-                        imageCount: imageCount
+
+            function hideLoadingModal() {
+                document.getElementById('loadingModal').classList.add('hidden');
+            }
+
+            function updateProgress(percent, text) {
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('progressText').textContent = Math.round(percent) + '%';
+                document.getElementById('loadingText').textContent = text;
+            }
+
+            function showUploadSuccess() {
+                const statusDiv = document.getElementById('uploadStatus');
+                const countText = document.getElementById('uploadedCount');
+                countText.textContent = `${uploadedImages.length} images processed`;
+                statusDiv.classList.remove('hidden');
+            }
+
+            function enableProceedButton() {
+                proceedBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                proceedBtn.classList.add('bg-djahit-orange', 'hover:bg-cream', 'hover:text-djahit-orange', 'hover:border', 'hover:border-djahit-orange', 'cursor-pointer');
+                proceedBtn.disabled = false;
+                proceedBtn.textContent = 'Proceed to Analysis';
+                
+                proceedBtn.addEventListener('click', function() {
+                    // Store uploaded keys in sessionStorage for the next page
+                    const uploadData = {
+                        keys: uploadedKeys,
+                        images: uploadedImages,
+                        timestamp: new Date().toISOString()
                     };
-                    localStorage.setItem('djahitOrderData', JSON.stringify(formData));
-                    const urlParams = new URLSearchParams({
-                        damage: damageType.value,
-                        clothing: clothingType.value,
-                        size: size,
-                        location: location,
-                        images: imageCount.toString()
-                    });
-                    console.log('Form submitted successfully with:', formData);
-                    alert(`Pesanan berhasil dikonfirmasi dengan ${imageCount} gambar!`);
-                    window.location = `../../frontend/page/formpembayaran.html?${urlParams.toString()}`;
+                    
+                    // Use sessionStorage instead of localStorage to avoid persistence issues
+                    const uploadDataStr = JSON.stringify(uploadData);
+                    sessionStorage.setItem('djahitUploadData', uploadDataStr);
+                    
+                    // Redirect to analysis page
+                    window.location.href = 'formpembayaran.html';
                 });
-            } else {
-                console.error('Form element not found!');
             }
-            window.addEventListener('scroll', () => {
-                const navbar = document.querySelector('nav');
-                if (navbar) {
-                    if (window.scrollY > 100) {
-                        navbar.classList.add('shadow-lg');
-                    } else {
-                        navbar.classList.remove('shadow-lg');
-                    }
-                }
-            });
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes fadeIn {
-                    from {
-                        opacity: 0;
-                        transform: translateY(30px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateY(0);
-                    }
-                }
-                .animate-fade-in {
-                    animation: fadeIn 0.8s ease-out forwards;
-                }
-                input:focus, textarea:focus {
-                    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1);
-                }
-                button:focus {
-                    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1);
-                }
-                input, textarea, button {
-                    transition: all 0.2s ease-in-out;
-                }
-                input[type="radio"]:checked {
-                    background-color: #E07A5F;
-                    border-color: #E07A5F;
-                    font-weight: 500;
-                }
-                .image-slot {
-                    position: relative;
-                    overflow: hidden;
-                }
-                .remove-image {
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                    z-index: 10;
-                }
-                @media (max-width: 640px) {
-                    .grid-cols-1 {
-                        gap: 1rem;
-                    }
-                    .grid-cols-1.sm\\:grid-cols-2 {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 0.75rem;
-                    }
-                    .flex.flex-col.sm\\:flex-row button {
-                        width: 100%;
-                    }
-                }
-                @media (min-width: 640px) and (max-width: 1023px) {
-                    .lg\\:grid-cols-2 {
-                        grid-template-columns: 1fr;
-                        gap: 2rem;
-                    }
-                    .xl\\:grid-cols-4 {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-                }
-                @media (min-width: 1024px) {
-                    .lg\\:col-start-2 {
-                        margin-top: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
+
+            // Back button functionality
+            window.goBack = function() {
+                window.location.href = '../../frontend/page/forminput.html';
+            };
         });
     </script>
 </body>
