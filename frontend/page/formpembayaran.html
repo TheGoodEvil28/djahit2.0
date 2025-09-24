@@ -264,63 +264,49 @@
         }
 
         function displayResults(results) {
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('results').classList.remove('hidden');
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('results').classList.remove('hidden');
 
-            // Populate image gallery
-            const imageGallery = document.getElementById('imageGallery');
-            imageGallery.innerHTML = '';
-            
-            results.forEach((result, index) => {
-                const imageDiv = document.createElement('div');
-                imageDiv.className = 'relative group cursor-pointer';
-                imageDiv.innerHTML = `
-                    <img src="${result.imageUrl}" alt="Image ${index + 1}" class="w-full h-24 object-cover rounded-lg border border-gray-300 group-hover:border-djahit-orange transition-colors">
-                    <div class="absolute bottom-1 right-1 bg-djahit-orange text-white text-xs px-2 py-1 rounded">
-                        ${index + 1}
-                    </div>
-                `;
-                
-                // Add click handler to view full image
-                imageDiv.addEventListener('click', () => showFullImage(result.imageUrl, index + 1));
-                imageGallery.appendChild(imageDiv);
-            });
+    // Populate image gallery
+    const imageGallery = document.getElementById('imageGallery');
+    imageGallery.innerHTML = '';
+    
+    results.forEach((result, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'relative group cursor-pointer';
+        imageDiv.innerHTML = `
+            <img src="${result.imageUrl}" alt="Image ${index + 1}" class="w-full h-24 object-cover rounded-lg border border-gray-300 group-hover:border-djahit-orange transition-colors">
+            <div class="absolute bottom-1 right-1 bg-djahit-orange text-white text-xs px-2 py-1 rounded">
+                ${index + 1}
+            </div>
+        `;
+        
+        // Add click handler to view full image
+        imageDiv.addEventListener('click', () => showFullImage(result.imageUrl, index + 1));
+        imageGallery.appendChild(imageDiv);
+    });
 
-            // Combine all analysis results
-            const allClothing = [];
-            const allDefects = [];
-            
-            results.forEach(result => {
-                if (result.analysis.clothing) {
-                    allClothing.push(...result.analysis.clothing);
-                }
-                if (result.analysis.defects) {
-                    allDefects.push(...result.analysis.defects);
-                }
-            });
+    // Combine all analysis results safely
+    const allClothing = [];
+    const allDefects = [];
 
-            // Update clothing table
-            updateClothingTable(allClothing);
-            
-            // Update defects table
-            updateDefectsTable(allDefects);
-            
-            // Update analysis summary
-            updateAnalysisSummary(allClothing, allDefects);
-            
-            // Update recommendations
-            updateRecommendations(allDefects);
-            
-            // Store analysis data for next page
-            analysisData = {
-                images: results.map(r => ({ url: r.imageUrl, key: r.key })),
-                clothing: allClothing,
-                defects: allDefects,
-                timestamp: new Date().toISOString()
-            };
-            
-            sessionStorage.setItem('djahitAnalysisData', JSON.stringify(analysisData));
-        }
+    results.forEach(result => {
+        // Use optional chaining and fallback to empty array
+        const clothingItems = result.analysisRaw?.clothing || [];
+        const defectItems = result.analysisRaw?.defects || [];
+
+        allClothing.push(...clothingItems);
+        allDefects.push(...defectItems);
+    });
+
+    // Update tables
+    updateClothingTable(allClothing);
+    updateDefectsTable(allDefects);
+
+    // Update recommendations using defects
+    updateRecommendations(allDefects);
+}
+
 
         function updateClothingTable(clothing) {
             const tbody = document.querySelector('#clothingTable tbody');
