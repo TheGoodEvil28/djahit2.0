@@ -109,6 +109,16 @@
         </div>
     </div>
 
+    <!-- Human-Readable Analysis Summary -->
+<div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+    <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">
+        Analysis Summary
+    </h3>
+    <div id="analysisText" class="text-sm text-gray-700">
+        <p class="text-gray-400">The human-readable analysis will appear here after processing.</p>
+    </div>
+</div>
+
     <!-- Defects Detection Results -->
     <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
         <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Defects Detected</h3>
@@ -273,32 +283,34 @@
     const allClothing = [];
     const allDefects = [];
 
-    results.forEach((result, index) => {
-        // Display images
-        const imageDiv = document.createElement('div');
-        imageDiv.className = 'relative group cursor-pointer';
-        imageDiv.innerHTML = `
-            <img src="${result.imageUrl}" alt="Image ${index + 1}" class="w-full h-24 object-cover rounded-lg border border-gray-300 group-hover:border-djahit-orange transition-colors">
-            <div class="absolute bottom-1 right-1 bg-djahit-orange text-white text-xs px-2 py-1 rounded">
-                ${index + 1}
-            </div>
-        `;
-        imageDiv.addEventListener('click', () => showFullImage(result.imageUrl, index + 1));
-        imageGallery.appendChild(imageDiv);
+   results.forEach((result, index) => {
+    // Display image
+    const imageDiv = document.createElement('div');
+    imageDiv.className = 'relative group cursor-pointer';
+    imageDiv.innerHTML = `
+        <img src="${result.imageUrl}" alt="Image ${index + 1}" class="w-full h-24 object-cover rounded-lg border border-gray-300 group-hover:border-djahit-orange transition-colors">
+        <div class="absolute bottom-1 right-1 bg-djahit-orange text-white text-xs px-2 py-1 rounded">
+            ${index + 1}
+        </div>
+    `;
+    imageDiv.addEventListener('click', () => showFullImage(result.imageUrl, index + 1));
+    imageGallery.appendChild(imageDiv);
 
-        // Safely combine clothing and defects
-        const clothingItems = result.analysisRaw?.clothing ?? [];
-        const defectItems = result.analysisRaw?.defects ?? [];
+    // Combine clothing and defects safely
+    const clothingItems = result.analysisRaw?.clothing ?? [];
+    const defectItems = result.analysisRaw?.defects ?? [];
+    allClothing.push(...clothingItems);
+    allDefects.push(...defectItems);
 
-        allClothing.push(...clothingItems);
-        allDefects.push(...defectItems);
-
-        // Optionally, display Bedrock human-readable summary per image
+    // --- ADD HUMAN-READABLE SUMMARY ---
+    if (result.analysisText) {
         const summaryDiv = document.createElement('div');
-        summaryDiv.className = 'my-2 p-2 bg-gray-50 rounded';
-        summaryDiv.innerHTML = `<strong>Summary (Human-readable):</strong><p>${result.analysisText ?? 'No summary available'}</p>`;
+        summaryDiv.className = 'my-2 p-2 bg-gray-50 rounded text-sm text-gray-800';
+        summaryDiv.innerHTML = `<strong>Analysis Summary:</strong> <p>${result.analysisText}</p>`;
         imageGallery.appendChild(summaryDiv);
-    });
+    }
+});
+
 
     updateClothingTable(allClothing);
     updateDefectsTable(allDefects);
