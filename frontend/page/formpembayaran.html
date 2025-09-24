@@ -35,140 +35,121 @@
 <body class="bg-cream font-sans" style="overflow-x: hidden;">
     <div id="navbar-container"></div>
     <main class="flex-1 px-4 md:px-6 lg:px-6 py-6 md:py-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-                <!-- Analysis Results Section -->
-                <div class="space-y-6">
-                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-normal border-b pb-2 border-[#A3B18A] text-button-green mb-4">Analysis Results</h3>
-                        
-                        <!-- Loading State -->
-                        <div id="loading" class="text-center py-8">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-djahit-orange mx-auto mb-4"></div>
-                            <p class="text-button-green font-medium">Analyzing your images...</p>
-                            <p class="text-sm text-gray-600 mt-2">This may take a few moments</p>
-                        </div>
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Loading / Error States -->
+    <div id="loading" class="text-center py-8">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-djahit-orange mx-auto mb-4"></div>
+      <p class="text-button-green font-medium">Analyzing your images...</p>
+      <p class="text-sm text-gray-600 mt-2">This may take a few moments</p>
+    </div>
 
-                        <!-- Results Container -->
-                        <div id="results" class="hidden">
-                            <!-- Uploaded Images Gallery -->
-                            <div class="mb-6">
-                                <h4 class="text-sm md:text-base font-medium text-text-dark mb-3">Uploaded Images</h4>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="imageGallery">
-                                    <!-- Images will be populated here -->
-                                </div>
-                            </div>
+    <div id="errorState" class="hidden text-center py-8">
+      <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <p class="text-red-600 font-medium">Analysis Failed</p>
+      <p class="text-sm text-gray-600 mt-2" id="errorMessage">Unable to analyze images. Please try again.</p>
+      <button onclick="retryAnalysis()" class="mt-4 bg-djahit-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors">Retry Analysis</button>
+    </div>
 
-                            <!-- Analysis Summary -->
-                            <div class="mb-6">
-                                <h4 class="text-sm md:text-base font-medium text-text-dark mb-3">Analysis Summary</h4>
-                                <div class="bg-gray-50 rounded-lg p-4" id="analysisSummary">
-                                    <p class="text-sm text-gray-700">Processing analysis results...</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Error State -->
-                        <div id="errorState" class="hidden text-center py-8">
-                            <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <p class="text-red-600 font-medium">Analysis Failed</p>
-                            <p class="text-sm text-gray-600 mt-2" id="errorMessage">Unable to analyze images. Please try again.</p>
-                            <button onclick="retryAnalysis()" class="mt-4 bg-djahit-orange text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
-                                Retry Analysis
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Analysis Details Section -->
-<div class="space-y-6">
-    <!-- Clothing Detection Results -->
-    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Clothing Detected</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full border border-gray-300" id="clothingTable">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-2 border text-left">Name</th>
-                        <th class="p-2 border text-left">Confidence</th>
-                        <th class="p-2 border text-left">Category</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="clothing-loading">
-                        <td class="p-2 border text-center" colspan="3">
-                            <div class="flex items-center justify-center py-4">
-                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- Analysis Results Section -->
+    <div id="results" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Left Column: Images + Summary -->
+      <div class="space-y-6">
+        <!-- Uploaded Images -->
+        <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+          <h3 class="text-base md:text-lg font-medium text-button-green mb-3 border-b border-[#A3B18A] pb-2">Uploaded Images</h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="imageGallery">
+            <!-- Images populated dynamically -->
+          </div>
         </div>
-    </div>
 
-    <!-- Human-Readable Analysis Summary -->
-<div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-    <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">
-        Analysis Summary
-    </h3>
-    <div id="analysisText" class="text-sm text-gray-700">
-        <p class="text-gray-400">The human-readable analysis will appear here after processing.</p>
-    </div>
-</div>
-
-    <!-- Defects Detection Results -->
-    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Defects Detected</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full border border-gray-300" id="defectsTable">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-2 border text-left">Defect Type</th>
-                        <th class="p-2 border text-left">Confidence</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="defects-loading">
-                        <td class="p-2 border text-center" colspan="2">
-                            <div class="flex items-center justify-center py-4">
-                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Human-Readable Summary -->
+        <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+          <h3 class="text-base md:text-lg font-medium text-button-green mb-3 border-b border-[#A3B18A] pb-2">Analysis Summary</h3>
+          <div id="analysisText" class="text-sm text-gray-700">
+            <p class="text-gray-400">The human-readable analysis will appear here after processing.</p>
+          </div>
         </div>
-    </div>
+      </div>
 
-    <!-- Recommended Actions -->
-    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Recommended Actions</h3>
-        <div id="recommendations" class="space-y-3">
+      <!-- Right Column: Detailed Tables + Recommendations -->
+      <div class="space-y-6">
+        <!-- Clothing Detection Table -->
+        <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm overflow-x-auto">
+          <h3 class="text-base md:text-lg font-medium text-button-green mb-3 border-b border-[#A3B18A] pb-2">Clothing Detected</h3>
+          <table class="w-full border border-gray-300" id="clothingTable">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-2 border text-left">Name</th>
+                <th class="p-2 border text-left">Confidence</th>
+                <th class="p-2 border text-left">Category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="clothing-loading">
+                <td class="p-2 border text-center" colspan="3">
+                  <div class="flex items-center justify-center py-4">
+                    <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Defects Table -->
+        <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm overflow-x-auto">
+          <h3 class="text-base md:text-lg font-medium text-button-green mb-3 border-b border-[#A3B18A] pb-2">Defects Detected</h3>
+          <table class="w-full border border-gray-300" id="defectsTable">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-2 border text-left">Defect Type</th>
+                <th class="p-2 border text-left">Confidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="defects-loading">
+                <td class="p-2 border text-center" colspan="2">
+                  <div class="flex items-center justify-center py-4">
+                    <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+          <h3 class="text-base md:text-lg font-medium text-button-green mb-3 border-b border-[#A3B18A] pb-2">Recommended Actions</h3>
+          <div id="recommendations" class="space-y-3">
             <div id="recommendations-loading" class="animate-pulse">
-                <div class="bg-gray-200 h-4 w-full rounded mb-2"></div>
-                <div class="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                <div class="bg-gray-200 h-4 w-1/2 rounded"></div>
+              <div class="bg-gray-200 h-4 w-full rounded mb-2"></div>
+              <div class="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
+              <div class="bg-gray-200 h-4 w-1/2 rounded"></div>
             </div>
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
-                        <button type="button" class="flex-1 bg-transparent border border-djahit-orange text-djahit-orange py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-djahit-orange hover:text-white transition-colors font-medium text-sm md:text-base" onclick="goBack()">
-                            Upload New Images
-                        </button>
-                        <button type="button" id="proceedToPayment" class="flex-1 bg-djahit-orange text-white py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-cream hover:text-djahit-orange hover:border hover:border-djahit-orange transition-all font-medium text-sm md:text-base">
-                            Proceed to Payment
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    </div> <!-- End Results Grid -->
+
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
+      <button type="button" class="flex-1 bg-transparent border border-djahit-orange text-djahit-orange py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-djahit-orange hover:text-white transition-colors font-medium text-sm md:text-base" onclick="goBack()">
+        Upload New Images
+      </button>
+      <button type="button" id="proceedToPayment" class="flex-1 bg-djahit-orange text-white py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-cream hover:text-djahit-orange hover:border hover:border-djahit-orange transition-all font-medium text-sm md:text-base">
+        Proceed to Payment
+      </button>
+    </div>
+
+  </div>
+</main>
+
 
     <div id="footer-container"></div>
 
