@@ -267,11 +267,14 @@
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('results').classList.remove('hidden');
 
-    // Populate image gallery
     const imageGallery = document.getElementById('imageGallery');
     imageGallery.innerHTML = '';
-    
+
+    const allClothing = [];
+    const allDefects = [];
+
     results.forEach((result, index) => {
+        // Display images
         const imageDiv = document.createElement('div');
         imageDiv.className = 'relative group cursor-pointer';
         imageDiv.innerHTML = `
@@ -280,32 +283,37 @@
                 ${index + 1}
             </div>
         `;
-        
-        // Add click handler to view full image
         imageDiv.addEventListener('click', () => showFullImage(result.imageUrl, index + 1));
         imageGallery.appendChild(imageDiv);
-    });
 
-    // Combine all analysis results safely
-    const allClothing = [];
-    const allDefects = [];
-
-    results.forEach(result => {
-        // Use optional chaining and fallback to empty array
-        const clothingItems = result.analysisRaw?.clothing || [];
-        const defectItems = result.analysisRaw?.defects || [];
+        // Safely combine clothing and defects
+        const clothingItems = result.analysisRaw?.clothing ?? [];
+        const defectItems = result.analysisRaw?.defects ?? [];
 
         allClothing.push(...clothingItems);
         allDefects.push(...defectItems);
+
+        // Optionally, display Bedrock human-readable summary per image
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'my-2 p-2 bg-gray-50 rounded';
+        summaryDiv.innerHTML = `<strong>Summary (Human-readable):</strong><p>${result.analysisText ?? 'No summary available'}</p>`;
+        imageGallery.appendChild(summaryDiv);
     });
 
-    // Update tables
     updateClothingTable(allClothing);
     updateDefectsTable(allDefects);
-
-    // Update recommendations using defects
     updateRecommendations(allDefects);
+
+    // Store for next page
+    analysisData = {
+        images: results.map(r => ({ url: r.imageUrl, key: r.key })),
+        clothing: allClothing,
+        defects: allDefects,
+        timestamp: new Date().toISOString()
+    };
+    sessionStorage.setItem('djahitAnalysisData', JSON.stringify(analysisData));
 }
+
 
 
         function updateClothingTable(clothing) {
