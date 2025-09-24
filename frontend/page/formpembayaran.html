@@ -83,67 +83,68 @@
                 </div>
 
                 <!-- Analysis Details Section -->
-                <div class="space-y-6">
-                    <!-- Clothing Detection Results -->
-                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Clothing Detected</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border border-gray-300" id="clothingTable">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="p-2 border text-left">Name</th>
-                                        <th class="p-2 border text-left">Confidence</th>
-                                        <th class="p-2 border text-left">Category</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="p-2 border" colspan="3">
-                                            <div class="flex items-center justify-center py-4">
-                                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Defects Detection Results -->
-                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Defects Detected</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full border border-gray-300" id="defectsTable">
-                                <thead>
-                                    <tr class="bg-gray-100">
-                                        <th class="p-2 border text-left">Defect Type</th>
-                                        <th class="p-2 border text-left">Confidence</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="p-2 border" colspan="2">
-                                            <div class="flex items-center justify-center py-4">
-                                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Recommended Actions -->
-                    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
-                        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Recommended Actions</h3>
-                        <div id="recommendations" class="space-y-3">
-                            <div class="animate-pulse">
-                                <div class="bg-gray-200 h-4 w-full rounded mb-2"></div>
-                                <div class="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
-                                <div class="bg-gray-200 h-4 w-1/2 rounded"></div>
+<div class="space-y-6">
+    <!-- Clothing Detection Results -->
+    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Clothing Detected</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300" id="clothingTable">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2 border text-left">Name</th>
+                        <th class="p-2 border text-left">Confidence</th>
+                        <th class="p-2 border text-left">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="clothing-loading">
+                        <td class="p-2 border text-center" colspan="3">
+                            <div class="flex items-center justify-center py-4">
+                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Defects Detection Results -->
+    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Defects Detected</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300" id="defectsTable">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="p-2 border text-left">Defect Type</th>
+                        <th class="p-2 border text-left">Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="defects-loading">
+                        <td class="p-2 border text-center" colspan="2">
+                            <div class="flex items-center justify-center py-4">
+                                <div class="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recommended Actions -->
+    <div class="bg-section-white rounded-lg p-4 md:p-6 shadow-sm">
+        <h3 class="text-base md:text-lg font-medium text-button-green mb-4 border-b border-[#A3B18A] pb-2">Recommended Actions</h3>
+        <div id="recommendations" class="space-y-3">
+            <div id="recommendations-loading" class="animate-pulse">
+                <div class="bg-gray-200 h-4 w-full rounded mb-2"></div>
+                <div class="bg-gray-200 h-4 w-3/4 rounded mb-2"></div>
+                <div class="bg-gray-200 h-4 w-1/2 rounded"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
                     <!-- Action Buttons -->
                     <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
@@ -198,44 +199,56 @@
         }
 
         async function analyzeImages(keys) {
-            try {
-                const results = [];
-                
-                for (let i = 0; i < keys.length; i++) {
-                    const key = keys[i];
-                    updateLoadingProgress(i, keys.length, `Analyzing image ${i + 1}...`);
+    try {
+        const results = [];
+        
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            updateLoadingProgress(i, keys.length, `Analyzing image ${i + 1}...`);
 
-                    // Get image URL for display
-                    const urlRes = await fetch(`${API_BASE}/get-url`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ key })
-                    });
-                    const { getUrl } = await urlRes.json();
+            // 1. Get image URL
+            const urlRes = await fetch(`${API_BASE}/get-url`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+            const { getUrl } = await urlRes.json();
 
-                    // Analyze image
-                    const analysisRes = await fetch(`${API_BASE}/analyze`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ key })
-                    });
-                    const analysisData = await analysisRes.json();
+            // 2. Analyze image via Rekognition Lambda
+            const analysisRes = await fetch(`${API_BASE}/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+            const rekognitionData = await analysisRes.json();
 
-                    results.push({
-                        key,
-                        imageUrl: getUrl,
-                        analysis: analysisData
-                    });
-                }
+            // 3. Send Rekognition JSON to Bedrock Lambda for human-readable text
+            const humanReadableRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    useCase: "rekognition-analysis",
+                    rekognitionJson: rekognitionData
+                })
+            });
+            const humanReadable = await humanReadableRes.json();
 
-                // Display results
-                displayResults(results);
-                
-            } catch (error) {
-                console.error('Analysis error:', error);
-                showError('Analysis failed: ' + error.message);
-            }
+            results.push({
+                key,
+                imageUrl: getUrl,
+                analysisRaw: rekognitionData,
+                analysisText: humanReadable.reply
+            });
         }
+
+        displayResults(results);
+
+    } catch (error) {
+        console.error('Analysis error:', error);
+        showError('Analysis failed: ' + error.message);
+    }
+}
+
 
         function updateLoadingProgress(current, total, message) {
             const loading = document.getElementById('loading');
