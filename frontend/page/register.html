@@ -122,7 +122,7 @@
                         <div class="text-center mt-6">
                             <p class="text-gray-600">
                                 Already have account? 
-                                <a href="/views/login.html" class="text-text-dark font-semibold hover:text-djahit-orange transition-colors underline">Login</a>
+                                <a href="/page/login.html" class="text-text-dark font-semibold hover:text-djahit-orange transition-colors underline">Login</a>
                             </p>
                         </div>
                     </form>
@@ -139,22 +139,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Configuration - Update this with your actual API URL
-            function getApiBaseUrl() {
-                const hostname = window.location.hostname;
-                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+            // function getApiBaseUrl() {
+            //     const hostname = window.location.hostname;
+            //     const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
                 
-                if (isLocalhost) {
-                    return 'http://localhost:8880/api';
-                } else if (hostname.includes('ngrok')) {
-                    // If frontend is served via ngrok, use the same domain for API
-                    return `${window.location.protocol}//${hostname}/api`;
-                } else {
-                    // Fallback or production URL
-                    return 'https://10.34.239.224/api';
-                }
-            }
+            //     if (isLocalhost) {
+            //         return 'http://localhost:8880/api';
+            //     } else if (hostname.includes('ngrok')) {
+            //         // If frontend is served via ngrok, use the same domain for API
+            //         return `${window.location.protocol}//${hostname}/api`;
+            //     } else {
+            //         // Fallback or production URL
+            //          return 'http://10.34.239.224:8880/api'; 
+            //     }
+            // }
             
-            const API_BASE = getApiBaseUrl();
+            const API_BASE =  'http://10.34.239.224:8880/api'; ;
             // Load navbar and footer
             $('#navbar-container').load('loginnavbar.html', function() {
                 if (typeof initializeButtonEffects === 'function') {
@@ -176,7 +176,7 @@
                 .then(response => {
                     if (response.ok) {
                         // User is logged in, redirect to dashboard
-                        window.location.href = '/views/riwayatorder.html';
+                        window.location.href = '/page/riwayatorder.html';
                         return;
                     }
                     // Token is invalid, remove it
@@ -323,7 +323,7 @@
                         
                         // Redirect to login after a short delay
                         setTimeout(() => {
-                            window.location.href = '/views/login.html?success=registration_successful';
+                            window.location.href = '/page/login.html?success=registration_successful';
                         }, 2000);
                         
                     } else {

@@ -331,7 +331,7 @@
         function checkAuth() {
             const token = getAuthToken();
             if (!token) {
-                window.location.href = '/views/login.html?error=Please log in to access this page';
+                window.location.href = '/page/login.html?error=Please log in to access this page';
                 return false;
             }
             return true;
@@ -402,7 +402,7 @@
         if (error.message.includes('Token tidak ditemukan') || 
             error.message.includes('session_expired')) {
             setTimeout(() => {
-                window.location.href = '/views/login.html?error=session_expired';
+                window.location.href = '/page/login.html?error=session_expired';
             }, 2000);
         }
     } finally {
@@ -428,7 +428,7 @@
                         // Token expired or invalid, redirect to login
                         localStorage.removeItem('authToken');
                         localStorage.removeItem('userData');
-                        window.location.href = '/views/login.html?error=session_expired';
+                        window.location.href = '/page/login.html?error=session_expired';
                         return null;
                     } else if (response.status === 403) {
                         throw new Error('Tidak memiliki akses untuk melihat data ini.');

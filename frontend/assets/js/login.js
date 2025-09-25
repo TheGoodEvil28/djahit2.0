@@ -2,22 +2,22 @@
         document.addEventListener('DOMContentLoaded', function() {
     // Configuration - Update this with your actual API URL
     // const API_BASE = 'http://localhost:8880/api'; // Change to your ngrok URL when deployed
-        function getApiBaseUrl() {
-                const hostname = window.location.hostname;
-                const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+        // function getApiBaseUrl() {
+        //         const hostname = window.location.hostname;
+        //         const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
                 
-                if (isLocalhost) {
-                    return 'http://localhost:8880/api';
-                } else if (hostname.includes('ngrok')) {
-                    // If frontend is served via ngrok, use the same domain for API
-                    return `${window.location.protocol}//${hostname}/api`;
-                } else {
-                    // Fallback or production URL
-                    return 'https://10.34.239.224/api';
-                }
-            }
+        //         if (isLocalhost) {
+        //             return 'http://localhost:8880/api';
+        //         } else if (hostname.includes('ngrok')) {
+        //             // If frontend is served via ngrok, use the same domain for API
+        //             return `${window.location.protocol}//${hostname}/api`;
+        //         } else {
+        //             // Fallback or production URL
+        //             return 'https://10.34.239.224/api';
+        //         }
+        //     }
             
-        const API_BASE = getApiBaseUrl();
+        const API_BASE =  'http://10.34.239.224:8880/api'; ;
     // Load navbar and footer
     $('#navbar-container').load('loginnavbar.html', function() {
         if (typeof initializeButtonEffects === 'function') {
@@ -39,7 +39,7 @@
         .then(response => {
             if (response.ok) {
                 // User is logged in, redirect to dashboard
-                window.location.href = '/views/riwayatorder.html'; // Update with your dashboard URL
+                window.location.href = '/page/riwayatorder.html'; // Update with your dashboard URL
                 return;
             }
             // Token is invalid, remove it
@@ -178,7 +178,7 @@
                 
                 // Redirect to dashboard after a short delay
                 setTimeout(() => {
-                    window.location.href = '../views/riwayatorder.html'; // Update with your actual dashboard URL
+                    window.location.href = '../page/riwayatorder.html'; // Update with your actual dashboard URL
                 }, 1500);
                 
             } else {
