@@ -1,0 +1,4 @@
+/* Custom colors and transitions */
+body { background-color: #E9E4D4; font-family: 'Plus Jakarta Sans', sans-serif; }
+.input-field { @apply w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange; }
+.btn-primary { @apply bg-djahit-orange text-white py-3 px-4 rounded-lg hover:opacity-90 transition-opacity font-semibold text-base; }
