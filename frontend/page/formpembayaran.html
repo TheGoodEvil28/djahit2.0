@@ -137,6 +137,23 @@
 
     </div> <!-- End Results Grid -->
 
+<div class="my-4">
+  <p class="font-medium text-gray-700">Choose Analysis Type:</p>
+  <label class="inline-flex items-center mr-4">
+    <input type="radio" name="analysisType" value="general" checked>
+    <span class="ml-2">General Clothing Labels</span>
+  </label>
+  <label class="inline-flex items-center">
+    <input type="radio" name="analysisType" value="custom">
+    <span class="ml-2">Custom Defect Labels</span>
+  </label>
+</div>
+
+<button id="startAnalysis" class="bg-djahit-orange text-white px-4 py-2 rounded mt-2">
+  Start Analysis
+</button>
+
+
     <!-- Action Buttons -->
     <div class="flex flex-col sm:flex-row gap-3 md:gap-4">
       <button type="button" class="flex-1 bg-transparent border border-djahit-orange text-djahit-orange py-2 md:py-3 px-4 md:px-6 rounded-lg hover:bg-djahit-orange hover:text-white transition-colors font-medium text-sm md:text-base" onclick="goBack()">
@@ -158,38 +175,41 @@
         let analysisData = {};
 
         document.addEventListener('DOMContentLoaded', function() {
-            $('#navbar-container').load('navbar.html');
-            $('#footer-container').load('footer.html');
-            
-            // Load upload data and start analysis
-            loadUploadedData();
-        });
+    $('#navbar-container').load('navbar.html');
+    $('#footer-container').load('footer.html');
 
-        async function loadUploadedData() {
-            try {
-                // Get uploaded data from sessionStorage
-                const uploadDataStr = sessionStorage.getItem('djahitUploadData');
-                if (!uploadDataStr) {
-                    showError('No upload data found. Please upload images first.');
-                    return;
-                }
+    // Only bind start button
+    document.getElementById('startAnalysis').addEventListener('click', loadUploadedData);
+});
 
-                const uploadData = JSON.parse(uploadDataStr);
-                if (!uploadData.keys || uploadData.keys.length === 0) {
-                    showError('No images found. Please upload images first.');
-                    return;
-                }
-
-                // Start analysis process
-                await analyzeImages(uploadData.keys);
-                
-            } catch (error) {
-                console.error('Error loading upload data:', error);
-                showError('Error loading upload data: ' + error.message);
-            }
+async function loadUploadedData() {
+    try {
+        const uploadDataStr = sessionStorage.getItem('djahitUploadData');
+        if (!uploadDataStr) {
+            showError('No upload data found. Please upload images first.');
+            return;
         }
 
-        async function analyzeImages(keys) {
+        const uploadData = JSON.parse(uploadDataStr);
+        if (!uploadData.keys || uploadData.keys.length === 0) {
+            showError('No images found. Please upload images first.');
+            return;
+        }
+
+        // Get selected analysis type
+        const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+        const useCustom = analysisType === "custom";
+
+        // Start analysis
+        await analyzeImages(uploadData.keys, useCustom);
+
+    } catch (error) {
+        console.error('Error loading upload data:', error);
+        showError('Error loading upload data: ' + error.message);
+    }
+}
+
+async function analyzeImages(keys, useCustom) {
     try {
         const results = [];
         
@@ -205,15 +225,15 @@
             });
             const { getUrl } = await urlRes.json();
 
-            // 2. Analyze image via Rekognition Lambda
+            // 2. Analyze (send use_custom flag to backend)
             const analysisRes = await fetch(`${API_BASE}/analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key })
+                body: JSON.stringify({ key, use_custom: useCustom })
             });
             const rekognitionData = await analysisRes.json();
 
-            // 3. Send Rekognition JSON to Bedrock Lambda for human-readable text
+            // 3. Convert to human-readable
             const humanReadableRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
                 method: 'POST',
                 headers: { "Content-Type": "application/json" },
@@ -239,6 +259,7 @@
         showError('Analysis failed: ' + error.message);
     }
 }
+
 
 
         function updateLoadingProgress(current, total, message) {
