@@ -45,10 +45,11 @@
     formData.append('file', selectedFile);
 
     try {
-      const response = await fetch('http://djahit.andikanugra.my.id/predict', {
+      const response = await fetch('http://djahit.andikanugra.my.id:8009/predict', {
         method: 'POST',
         body: formData
-      });
+        });
+
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
