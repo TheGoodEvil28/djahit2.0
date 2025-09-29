@@ -17,7 +17,7 @@
         //         }
         //     }
             
-        const API_BASE =  'http://djahit.andikanugra.my.id/api'; 
+        const API_BASE =  'https://djahit.andikanugra.my.id/api'; 
     // Load navbar and footer
     $('#navbar-container').load('loginnavbar.html', function() {
         if (typeof initializeButtonEffects === 'function') {
