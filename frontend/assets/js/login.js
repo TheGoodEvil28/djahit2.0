@@ -1,19 +1,5 @@
 
         document.addEventListener('DOMContentLoaded', function() {
-    // Configuration - Update this with your actual API URL
-    // const API_BASE = 'http://localhost:8880/api'; // Change to your ngrok URL when deployed
-        // function getApiBaseUrl() {
-        //         const hostname = window.location.hostname;
-        //         const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
-                
-        //         if (isLocalhost) {
-        //             return 'http://localhost:8880/api';
-        //         } else if (hostname.includes('ngrok')) {
-        //             // If frontend is served via ngrok, use the same domain for API
-        //             return `${window.location.protocol}//${hostname}/api`;
-        //         } else {
-        //             // Fallback or production URL
-
         const API_BASE =  'https://djahit.andikanugra.my.id/api'; 
 
     $('#navbar-container').load('loginnavbar.html', function() {
