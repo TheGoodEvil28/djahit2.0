@@ -13,12 +13,9 @@
         //             return `${window.location.protocol}//${hostname}/api`;
         //         } else {
         //             // Fallback or production URL
-        //             return 'https://10.34.239.224/api';
-        //         }
-        //     }
-            
+
         const API_BASE =  'https://djahit.andikanugra.my.id/api'; 
-    // Load navbar and footer
+
     $('#navbar-container').load('loginnavbar.html', function() {
         if (typeof initializeButtonEffects === 'function') {
             initializeButtonEffects();
