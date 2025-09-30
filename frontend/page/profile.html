@@ -310,7 +310,7 @@
     </style>
     <script>
         const API_CONFIG = {
-            baseUrl: 'http://10.34.239.224:8880', // Match your server port
+            baseUrl: 'https://djahit.andikanugra.my.id', // Match your server port
             endpoints: {
                 me: '/api/users/me'
             }
@@ -331,7 +331,7 @@
         function checkAuth() {
             const token = getAuthToken();
             if (!token) {
-                window.location.href = '/page/login.html?error=Please log in to access this page';
+                window.location.href = '/frontend/page/login.html?error=Please log in to access this page';
                 return false;
             }
             return true;
@@ -402,7 +402,7 @@
         if (error.message.includes('Token tidak ditemukan') || 
             error.message.includes('session_expired')) {
             setTimeout(() => {
-                window.location.href = '/page/login.html?error=session_expired';
+                window.location.href = '/frontend/page/login.html?error=session_expired';
             }, 2000);
         }
     } finally {

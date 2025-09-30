@@ -227,7 +227,14 @@
     <div id="footer-container"></div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        $('#navbar-container').load('frontend/page/guestnavbar.html');
+        function getAuthToken() {
+        return localStorage.getItem('authToken');
+    }
+    
+    const isAuthenticated = getAuthToken() !== null;
+    const navbarPath = isAuthenticated ? 'frontend/page/navbar.html' : 'frontend/page/guestnavbar.html';
+    
+    $('#navbar-container').load(navbarPath);
         $('#footer-container').load('frontend/page/footer.html');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
