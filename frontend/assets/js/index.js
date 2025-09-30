@@ -244,83 +244,64 @@
         document.head.appendChild(style);
 
 
+
+// Chat toggle
 document.addEventListener('DOMContentLoaded', () => {
-  const chatHeader = document.getElementById('chatHeader');
-  const chatToggleIcon = document.getElementById('chatToggleIcon');
-  const chatContainer = document.getElementById('chatContainer');
-  const sendBtn = document.getElementById('sendBtn');
-  const messageInput = document.getElementById('userMessage');
+    const chatHeader = document.getElementById('chatHeader');
+    const chatToggleIcon = document.getElementById('chatToggleIcon');
+    const chatContainer = document.getElementById('chatContainer');
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('userMessage');
+    const chatDiv = document.getElementById('chat');
 
-  // Toggle chat visibility
-  chatHeader.addEventListener('click', () => {
-    if (chatContainer.classList.contains('hidden')) {
-      chatContainer.classList.remove('hidden');
-      chatToggleIcon.textContent = '−';
-    } else {
-      chatContainer.classList.add('hidden');
-      chatToggleIcon.textContent = '+';
+    // Toggle chat visibility
+    chatHeader.addEventListener('click', () => {
+        if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+            chatContainer.style.display = 'block';
+            chatToggleIcon.textContent = '−';
+        } else {
+            chatContainer.style.display = 'none';
+            chatToggleIcon.textContent = '+';
+        }
+    });
+
+    // Send message function
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        chatDiv.innerHTML += `<p class="mb-2"><strong>You:</strong> ${message}</p>`;
+        messageInput.value = "";
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        const payload = { useCase: "chatbot", userMessage: message };
+        try {
+            const response = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            chatDiv.innerHTML += `<p class="mb-2"><strong>Bot:</strong> ${data.reply}</p>`;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        } catch (err) {
+            chatDiv.innerHTML += `<p class="mb-2"><strong>Bot:</strong> Error connecting to Lambda.</p>`;
+            console.error(err);
+        }
     }
-  });
 
-  // Helper: append message bubble
-  function appendMessage(sender, text) {
-    const msgWrapper = document.createElement('div');
-    msgWrapper.classList.add('flex', 'items-start', 'space-x-2');
-    if (sender === 'user') {
-      msgWrapper.classList.add('justify-end');
-    }
+    sendBtn.addEventListener('click', sendMessage);
 
-    const bubble = document.createElement('div');
-    bubble.classList.add(
-      'rounded-2xl',
-      'px-4',
-      'py-3',
-      'text-sm',
-      'shadow-sm',
-      'max-w-[80%]'
-    );
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
 
-    if (sender === 'user') {
-      bubble.classList.add('bg-[#393E30]', 'text-white');
-    } else {
-      bubble.classList.add('bg-white', 'text-[#393E30]');
-    }
-
-    bubble.textContent = text;
-    msgWrapper.appendChild(bubble);
-    chatContainer.appendChild(msgWrapper);
-
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
-
-  // Send message
-  async function sendMessage() {
-    const message = messageInput.value.trim();
-    if (!message) return;
-
-    appendMessage('user', message);
-    messageInput.value = "";
-
-    const payload = { useCase: "chatbot", userMessage: message };
-    try {
-      const response = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      appendMessage('bot', data.reply);
-    } catch (err) {
-      appendMessage('bot', "Error connecting to Lambda.");
-      console.error(err);
-    }
-  }
-
-  sendBtn.addEventListener('click', sendMessage);
-  messageInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  });
+    // Optional: start hidden
+    chatContainer.style.display = 'none';
 });
+
+
+
