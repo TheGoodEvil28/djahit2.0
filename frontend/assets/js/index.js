@@ -256,14 +256,14 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Chatbot initialization function
+// Secure Chatbot initialization - Replace chatbot section in main.js
 function initializeChatbot(isAuthenticated) {
     const chatbotWidget = document.getElementById('chatbotWidget');
     
-    // Hide chatbot if not authenticated
+    // CRITICAL: Completely remove chatbot from DOM if not authenticated
     if (!isAuthenticated) {
         if (chatbotWidget) {
-            chatbotWidget.style.display = 'none';
+            chatbotWidget.remove(); // Remove from DOM entirely, not just hide
         }
         return;
     }
@@ -294,7 +294,6 @@ function initializeChatbot(isAuthenticated) {
         }
     });
 
-    // Helper: append message bubble
     function appendMessage(sender, text) {
         const msgWrapper = document.createElement('div');
         msgWrapper.classList.add('flex', 'items-start', 'space-x-2');
@@ -321,35 +320,58 @@ function initializeChatbot(isAuthenticated) {
         bubble.textContent = text;
         msgWrapper.appendChild(bubble);
         chatContainer.appendChild(msgWrapper);
-
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // Send message with auth token
+    // SECURE: Verify auth before EVERY message send
+    async function verifyAuthBeforeSend() {
+        const authToken = localStorage.getItem('authToken');
+        
+        if (!authToken) {
+            return false;
+        }
+
+        try {
+            // Verify token is still valid
+            const response = await fetch('https://djahit.andikanugra.my.id/api/users/me', {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
+    }
+
     async function sendMessage() {
         const message = messageInput.value.trim();
         if (!message) return;
 
-        const authToken = localStorage.getItem('authToken');
+        // CRITICAL: Verify auth before sending
+        const isValid = await verifyAuthBeforeSend();
         
-        // Double-check authentication before sending
-        if (!authToken) {
-            appendMessage('bot', "Session expired. Please login again.");
-            // Hide chatbot and redirect to login
+        if (!isValid) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            appendMessage('bot', "Session expired. Redirecting to login...");
+            
             setTimeout(() => {
-                if (chatbotWidget) chatbotWidget.style.display = 'none';
-                window.location.href = '/login.html'; // Adjust path as needed
+                if (chatbotWidget) chatbotWidget.remove();
+                window.location.href = '/frontend/page/login.html?error=session_expired';
             }, 2000);
             return;
         }
 
+        const authToken = localStorage.getItem('authToken');
         appendMessage('user', message);
         messageInput.value = "";
 
         const payload = { 
             useCase: "chatbot", 
-            userMessage: message,
-            authToken: authToken // Include auth token in payload
+            userMessage: message
         };
 
         try {
@@ -357,18 +379,19 @@ function initializeChatbot(isAuthenticated) {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "Authorization": `Bearer ${authToken}` // Also send in header
+                    "Authorization": `Bearer ${authToken}`
                 },
                 body: JSON.stringify(payload)
             });
 
             if (response.status === 401 || response.status === 403) {
-                // Auth failed - clear token and hide chatbot
                 localStorage.removeItem('authToken');
-                appendMessage('bot', "Authentication failed. Please login again.");
+                localStorage.removeItem('userData');
+                appendMessage('bot', "Authentication failed. Redirecting to login...");
+                
                 setTimeout(() => {
-                    if (chatbotWidget) chatbotWidget.style.display = 'none';
-                    window.location.href = '/login.html';
+                    if (chatbotWidget) chatbotWidget.remove();
+                    window.location.href = '/frontend/page/login.html?error=authentication_failed';
                 }, 2000);
                 return;
             }
@@ -390,26 +413,31 @@ function initializeChatbot(isAuthenticated) {
     });
 }
 
-// Global logout function that can be called from navbar
-window.performLogout = function() {
-    // Clear all auth data
-    localStorage.removeItem('authToken');
-    sessionStorage.clear();
-    
-    // Hide chatbot immediately
-    const chatbotWidget = document.getElementById('chatbotWidget');
-    if (chatbotWidget) {
-        chatbotWidget.style.display = 'none';
+// Re-check auth periodically (every 5 minutes)
+setInterval(() => {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+        fetch('https://djahit.andikanugra.my.id/api/users/me', {
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            if (!response.ok) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userData');
+                const chatbotWidget = document.getElementById('chatbotWidget');
+                if (chatbotWidget) chatbotWidget.remove();
+                
+                // Show notification
+                if (typeof showToast === 'function') {
+                    showToast('Session expired. Please login again.', 'error');
+                }
+                
+                setTimeout(() => {
+                    window.location.href = '/frontend/page/login.html?error=session_expired';
+                }, 2000);
+            }
+        });
     }
-    
-    // Reload page to reset state or redirect to home
-    window.location.href = '/'; // or window.location.reload();
-};
-
-// Listen for auth state changes (for when user logs in from another tab)
-window.addEventListener('storage', (e) => {
-    if (e.key === 'authToken') {
-        const isAuthenticated = e.newValue !== null;
-        initializeChatbot(isAuthenticated);
-    }
-});
+}, 5 * 60 * 1000); // 5 minutes
