@@ -36,16 +36,15 @@ async function loadUploadedData() {
         showError('Error loading upload data: ' + error.message);
     }
 }
-
 async function analyzeImages(keys, useCustom) {
     try {
         const results = [];
-        
+
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             updateLoadingProgress(i, keys.length, `Analyzing image ${i + 1}...`);
 
-            // 1. Get image URL
+            // 1. Get image URL (from your API)
             const urlRes = await fetch(`${API_BASE}/get-url`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -53,40 +52,74 @@ async function analyzeImages(keys, useCustom) {
             });
             const { getUrl } = await urlRes.json();
 
-            // 2. Analyze (send use_custom flag to backend)
-            const analysisRes = await fetch(`${API_BASE}/analyze`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key, use_custom: useCustom })
-            });
-            const rekognitionData = await analysisRes.json();
+            let analysisRaw, humanReadable;
 
-            // 3. Convert to human-readable
-            const humanReadableRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    useCase: "rekognition-analysis",
-                    rekognitionJson: rekognitionData
-                })
-            });
-            const humanReadable = await humanReadableRes.json();
+            if (useCustom) {
+                // ==== On-Prem YOLO (Defect Analysis) ====
+                const fileRes = await fetch(getUrl);
+                const blob = await fileRes.blob();
+                const formData = new FormData();
+                formData.append("file", blob, key);
+
+                const yoloRes = await fetch("https://djahit.andikanugra.my.id/predict", {
+                    method: "POST",
+                    body: formData
+                });
+
+                analysisRaw = await yoloRes.json();
+
+                // === Send YOLO results to Bedrock chatbot ===
+                const chatbotRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        useCase: "yolo-analysis",
+                        yoloJson: analysisRaw
+                    })
+                });
+
+                humanReadable = await chatbotRes.json();
+
+            } else {
+                // ==== AWS Rekognition (General Clothing Labels) ====
+                const analysisRes = await fetch(`${API_BASE}/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ key, use_custom: false })
+                });
+
+                analysisRaw = await analysisRes.json();
+
+                // === Send Rekognition results to Bedrock chatbot ===
+                const chatbotRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        useCase: "rekognition-analysis",
+                        rekognitionJson: analysisRaw
+                    })
+                });
+
+                humanReadable = await chatbotRes.json();
+            }
 
             results.push({
                 key,
                 imageUrl: getUrl,
-                analysisRaw: rekognitionData,
+                analysisRaw,
                 analysisText: humanReadable.reply
             });
         }
 
         displayResults(results);
 
-    } catch (error) {
-        console.error('Analysis error:', error);
-        showError('Analysis failed: ' + error.message);
+    } catch (err) {
+        console.error("Error in analyzeImages:", err);
+        showError("Analysis failed: " + err.message);
     }
 }
+
+
 
 
 
