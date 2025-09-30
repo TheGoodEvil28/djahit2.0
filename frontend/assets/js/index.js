@@ -251,6 +251,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendBtn = document.getElementById('sendBtn');
   const messageInput = document.getElementById('userMessage');
 
+  // ✅ Cek auth
+  function getAuthToken() {
+    return localStorage.getItem('authToken');
+  }
+  const isAuthenticated = getAuthToken() !== null;
+
   // Toggle chat visibility
   chatHeader.addEventListener('click', () => {
     if (chatContainer.classList.contains('hidden')) {
@@ -266,9 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function appendMessage(sender, text) {
     const msgWrapper = document.createElement('div');
     msgWrapper.classList.add('flex', 'items-start', 'space-x-2');
-    if (sender === 'user') {
-      msgWrapper.classList.add('justify-end');
-    }
+    if (sender === 'user') msgWrapper.classList.add('justify-end');
 
     const bubble = document.createElement('div');
     bubble.classList.add(
@@ -289,14 +293,19 @@ document.addEventListener('DOMContentLoaded', () => {
     bubble.textContent = text;
     msgWrapper.appendChild(bubble);
     chatContainer.appendChild(msgWrapper);
-
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
-  // Send message
+  // ✅ Blokir jika belum register
   async function sendMessage() {
     const message = messageInput.value.trim();
     if (!message) return;
+
+    if (!isAuthenticated) {
+      appendMessage('bot', "⚠️ Kamu harus register/login dulu untuk pakai chatbot.");
+      messageInput.value = "";
+      return;
+    }
 
     appendMessage('user', message);
     messageInput.value = "";
