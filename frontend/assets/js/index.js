@@ -296,34 +296,55 @@ document.addEventListener('DOMContentLoaded', () => {
     chatContainer.scrollTop = chatContainer.scrollHeight;
   }
 
-  // ✅ Blokir jika belum register
-  async function sendMessage() {
-    const message = messageInput.value.trim();
-    if (!message) return;
+ // ✅ Blokir jika belum register
+async function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message) return;
 
-    if (!isAuthenticated) {
-      appendMessage('bot', "⚠️ Kamu harus register/login dulu untuk pakai chatbot.");
-      messageInput.value = "";
+  // ⚡️ Always re-check here
+  const token = getAuthToken();
+  if (!token) {
+    appendMessage('bot', "⚠️ Kamu harus register/login dulu untuk pakai chatbot.");
+    messageInput.value = "";
+    return;
+  }
+
+  appendMessage('user', message);
+  messageInput.value = "";
+
+  const payload = { useCase: "chatbot", userMessage: message };
+  try {
+    const response = await fetch(
+      "https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // ⬇️ Pass token ke backend biar diverifikasi
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        appendMessage('bot', "❌ Token invalid atau expired. Silakan login ulang.");
+        return;
+      }
+      appendMessage('bot', "⚠️ Server error.");
       return;
     }
 
-    appendMessage('user', message);
-    messageInput.value = "";
+    const data = await response.json();
+    appendMessage('bot', data.reply);
 
-    const payload = { useCase: "chatbot", userMessage: message };
-    try {
-      const response = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await response.json();
-      appendMessage('bot', data.reply);
-    } catch (err) {
-      appendMessage('bot', "Error connecting to Lambda.");
-      console.error(err);
-    }
+  } catch (err) {
+    appendMessage('bot', "Error connecting to Lambda.");
+    console.error(err);
   }
+}
+
 
   sendBtn.addEventListener('click', sendMessage);
   messageInput.addEventListener('keydown', (e) => {
