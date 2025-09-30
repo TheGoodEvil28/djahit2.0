@@ -1,0 +1,307 @@
+ 
+        // Configuration - Update with your actual API URL
+        const API_CONFIG = {
+            baseUrl: 'https://djahit.andikanugra.my.id', // Match your server port
+            endpoints: {
+                repairRequests: '/api/repair-requests'
+            }
+        };
+
+        // Get token from localStorage (matches your login implementation)
+        function getAuthToken() {
+            return localStorage.getItem('authToken');
+        }
+
+        // Get current user data
+        function getCurrentUser() {
+            const userData = localStorage.getItem('userData');
+            return userData ? JSON.parse(userData) : null;
+        }
+
+        // Check if user is logged in and redirect if not
+        function checkAuth() {
+            const token = getAuthToken();
+            if (!token) {
+                window.location.href = '/frontend/page/login.html?error=Please log in to access this page';
+                return false;
+            }
+            return true;
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const options = { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            };
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        // Get status styling (matches your backend status values)
+        function getStatusStyle(status) {
+            const statusMap = {
+                'Pending': { bg: 'bg-yellow-200', text: 'text-yellow-800', label: 'Pending' },
+                'Order Diterima': { bg: 'bg-button-diterima', text: 'text-text-radio', label: 'Order Diterima' },
+                'Sedang Dijahit': { bg: 'bg-button-green', text: 'text-white', label: 'Sedang Dijahit' },
+                'Dalam Pengiriman': { bg: 'bg-button-dalam', text: 'text-white', label: 'Dalam Pengiriman' },
+                'Selesai': { bg: 'bg-djahit-orange', text: 'text-white', label: 'Selesai' }
+            };
+            return statusMap[status] || statusMap['Pending'];
+        }
+
+        // Create desktop table row
+        function createDesktopRow(item) {
+            const statusStyle = getStatusStyle(item.status);
+            const itemName = getItemDisplayName(item);
+            const itemType = item.clothing_type || 'N/A';
+            const totalPrice = item.estimated_cost || 0;
+            
+            return `
+                <tr class="hover:bg-[#EBE7D3]" data-id="${item.id}">
+                    <td class="px-6 py-4 text-sm text-gray-900">${itemName}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${itemType}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatCurrency(totalPrice)}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900">${formatDate(item.created_at || new Date())}</td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-3 py-1 text-xs mx-auto font-medium ${statusStyle.bg} w-[133px] h-[40px] ${statusStyle.text} rounded-full flex items-center justify-center">
+                            ${statusStyle.label}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center space-x-2">
+                            <button onclick="deleteItem(${item.id})" class="text-gray-400 hover:text-gray-600" title="Hapus">
+                                <svg class="w-5 h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                            <button onclick="editItem(${item.id})" class="text-gray-400 hover:text-gray-600" title="Edit">
+                                <svg class="w-5 h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Create mobile card
+        function createMobileCard(item) {
+            const statusStyle = getStatusStyle(item.status);
+            const itemName = getItemDisplayName(item);
+            const itemType = item.clothing_type || 'N/A';
+            const totalPrice = item.estimated_cost || 0;
+            
+            return `
+                <div class="bg-[#EEE9D4] rounded-xl p-4 border border-gray-100 hover:shadow-md transition-shadow" data-id="${item.id}">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-semibold text-gray-900 text-sm sm:text-base">${itemName}</h3>
+                            <p class="text-gray-600 text-xs sm:text-sm">${itemType}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="deleteItem(${item.id})" class="text-gray-400 hover:text-gray-600 p-1" title="Hapus">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                            <button onclick="editItem(${item.id})" class="text-gray-400 hover:text-gray-600 p-1" title="Edit">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mb-3">
+                        <div>
+                            <p class="text-gray-600 text-xs">Total Pembayaran</p>
+                            <p class="font-semibold text-gray-900 text-sm">${formatCurrency(totalPrice)}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600 text-xs">Tanggal</p>
+                            <p class="font-medium text-gray-900 text-sm">${formatDate(item.created_at || new Date())}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <span class="px-3 py-1 text-xs font-medium ${statusStyle.bg} ${statusStyle.text} rounded-full">
+                            ${statusStyle.label}
+                        </span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to generate item display name
+        function getItemDisplayName(item) {
+            // Create a display name based on damage type and clothing type
+            const damageType = item.damage_type || 'Perbaikan';
+            const clothingType = item.clothing_type || 'Pakaian';
+            
+            // If there's custom description, use that
+            if (item.damage_type === 'Lainnya' && item.damage_type_other_desc) {
+                return `${item.damage_type_other_desc} - ${clothingType}`;
+            }
+            
+            if (item.clothing_type === 'Lainnya' && item.clothing_type_other_desc) {
+                return `${damageType} - ${item.clothing_type_other_desc}`;
+            }
+            
+            return `${damageType} - ${clothingType}`;
+        }
+
+        // Fetch repair requests from API
+        async function fetchRepairRequests() {
+            try {
+                showLoading(true);
+                hideError();
+                
+                const token = getAuthToken();
+                if (!token) {
+                    throw new Error('Token tidak ditemukan. Silakan login kembali.');
+                }
+
+                const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.repairRequests}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        // Token expired or invalid, redirect to login
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('userData');
+                        window.location.href = '/frontend/page/login.html?error=session_expired';
+                        return;
+                    } else if (response.status === 403) {
+                        throw new Error('Tidak memiliki akses untuk melihat data ini.');
+                    } else {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                }
+
+                const result = await response.json();
+                
+                // Handle your backend response structure
+                if (result.success && result.data && result.data.repair_requests) {
+                    populateTable(result.data.repair_requests);
+                } else if (result.success && result.data && Array.isArray(result.data)) {
+                    populateTable(result.data);
+                } else {
+                    throw new Error(result.error?.message || 'Invalid response format');
+                }
+
+            } catch (error) {
+                console.error('Error fetching repair requests:', error);
+                showError(error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Populate table with data
+        function populateTable(data) {
+            const desktopTableBody = document.getElementById('desktop-table-body');
+            const mobileCards = document.getElementById('mobile-cards');
+            const desktopTable = document.getElementById('desktop-table');
+            const emptyState = document.getElementById('empty-state');
+
+            if (data.length === 0) {
+                desktopTable.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                mobileCards.innerHTML = '';
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            desktopTable.classList.remove('hidden');
+
+            // Populate desktop table
+            desktopTableBody.innerHTML = data.map(item => createDesktopRow(item)).join('');
+
+            // Populate mobile cards
+            mobileCards.innerHTML = data.map(item => createMobileCard(item)).join('');
+        }
+
+        // Show/hide loading state
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            const desktopTable = document.getElementById('desktop-table');
+            const mobileCards = document.getElementById('mobile-cards');
+            const emptyState = document.getElementById('empty-state');
+
+            if (show) {
+                loading.classList.remove('hidden');
+                desktopTable.classList.add('hidden');
+                mobileCards.innerHTML = '';
+                emptyState.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        // Hide error message
+        function hideError() {
+            const errorDiv = document.getElementById('error');
+            errorDiv.classList.add('hidden');
+        }
+
+        // Action handlers (implement these based on your needs)
+        function deleteItem(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
+                // Implement delete functionality
+                console.log('Delete item with ID:', id);
+                // You can add API call to delete the item here
+            }
+        }
+
+        function editItem(id) {
+            // Implement edit functionality
+            console.log('Edit item with ID:', id);
+            // You can redirect to edit page or open modal here
+        }
+
+        // Refresh data
+        function refreshData() {
+            fetchRepairRequests();
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication first
+            if (!checkAuth()) {
+                return; // Exit if not authenticated
+            }
+
+            // Load navbar and footer
+            $('#navbar-container').load('navbar.html');
+            $('#footer-container').load('footer.html');
+            
+            // Fetch repair requests data
+            fetchRepairRequests();
+        });
+
+        // Auto refresh every 5 minutes (optional)
+        // setInterval(refreshData, 5 * 60 * 1000);
+   

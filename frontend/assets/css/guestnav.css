@@ -1,0 +1,27 @@
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    #registerBtn, #loginBtn {
+        width: 110px !important;
+        height: 42px !important;
+    }
+}
+@media (min-width: 1024px) {
+    #registerBtn, #loginBtn {
+        width: 129px !important;
+        height: 48px !important;
+    }
+}
+#mobileMenu {
+    transition: all 0.3s ease-in-out;
+}
+.hover\:text-djahit-orange:hover {
+    color: #E07A5F !important;
+}
+#mobileMenuBtn {
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+#mobileMenuBtn:active {
+    transform: scale(0.95);
+}
