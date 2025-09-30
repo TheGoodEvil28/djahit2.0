@@ -267,6 +267,40 @@
 <!-- 
 <script src="index.js"></script> -->
 
+<style>
+  /* Default placement */
+  #chatbotWidget {
+    bottom: 1rem;
+    right: 1rem;
+    width: 360px;
+    max-width: 100%;
+  }
+
+  /* Mobile adjustments */
+  @media (max-width: 640px) {
+    #chatbotWidget {
+      width: 90%;          /* almost full width */
+      bottom: 70px;        /* lift it above nav buttons */
+      right: 5%;           /* centered a bit */
+      max-height: 50vh;    /* not too tall */
+    }
+
+    #chatContainer {
+      max-height: 35vh;    /* smaller chat area */
+      padding: 0.5rem;     /* smaller padding */
+    }
+
+    #userMessage {
+      font-size: 14px;
+      padding: 0.4rem 0.8rem;
+    }
+
+    #sendBtn {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
 
 
 </body>
