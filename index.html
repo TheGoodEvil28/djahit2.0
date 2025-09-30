@@ -56,10 +56,14 @@
                 </div>                
                 <div class="flex justify-center lg:justify-end order-1 lg:order-2">
                     <div class="lg:fixed lg:ml-[200px] w-full lg:w-auto flex justify-center">
-                        <img src="frontend/assets/img/hero6.png" 
-                             alt="Woman in elegant clothing" 
-                             class="object-cover w-[300px] md:w-[400px] lg:w-[600px] mt-0 lg:mt-[-315px] max-h-[300px] md:max-h-[400px] lg:max-h-[638.999px] shadow-none">
-                    </div>
+    <img src="frontend/assets/img/hero6.png" 
+         alt="Woman in elegant clothing" 
+         class="object-contain md:object-contain lg:object-cover
+                w-[220px] sm:w-[260px] md:w-[400px] lg:w-[600px]
+                max-h-[220px] sm:max-h-[260px] md:max-h-[500px] lg:max-h-[638px]
+                mt-0 lg:mt-[-315px] shadow-none">
+</div>
+
                 </div>
             </div>
         </div>
@@ -223,8 +227,32 @@
                 </div>
             </div>
         </div>
+
+
+
     </section>
     <div id="footer-container"></div>
         <script type="module" src="frontend/assets/js/index.js"></script>
+
+        <!-- Chatbot floating widget -->
+<div id="chatbotWidget" class="fixed bottom-4 right-4 w-[320px] max-w-full bg-white rounded-xl shadow-lg flex flex-col overflow-hidden z-50">
+    <!-- Chat header -->
+    <div id="chatHeader" class="bg-djahit-orange text-white px-4 py-2 font-semibold cursor-pointer flex justify-between items-center">
+        <span>Chat with us</span>
+        <span id="chatToggleIcon">−</span>
+    </div>
+    
+    <!-- Chat content -->
+    <div id="chatContainer" class="flex-1 p-4 overflow-y-auto max-h-80">
+        <div id="chat"></div>
+    </div>
+
+    <!-- Input area -->
+    <div class="border-t border-gray-300 p-2 flex gap-2">
+        <textarea id="userMessage" class="flex-1 border rounded-lg p-2 text-sm resize-none h-10" placeholder="Type your message"></textarea>
+        <button id="sendBtn" class="bg-djahit-orange text-white px-4 rounded-lg hover:opacity-90">Send</button>
+    </div>
+</div>
+
 </body>
 </html>

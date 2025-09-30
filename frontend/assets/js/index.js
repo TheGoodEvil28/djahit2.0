@@ -242,3 +242,66 @@
             }
         `;
         document.head.appendChild(style);
+
+
+
+// Chat toggle
+document.addEventListener('DOMContentLoaded', () => {
+    const chatHeader = document.getElementById('chatHeader');
+    const chatToggleIcon = document.getElementById('chatToggleIcon');
+    const chatContainer = document.getElementById('chatContainer');
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('userMessage');
+    const chatDiv = document.getElementById('chat');
+
+    // Toggle chat visibility
+    chatHeader.addEventListener('click', () => {
+        if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+            chatContainer.style.display = 'block';
+            chatToggleIcon.textContent = '−';
+        } else {
+            chatContainer.style.display = 'none';
+            chatToggleIcon.textContent = '+';
+        }
+    });
+
+    // Send message function
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        chatDiv.innerHTML += `<p class="mb-2"><strong>You:</strong> ${message}</p>`;
+        messageInput.value = "";
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        const payload = { useCase: "chatbot", userMessage: message };
+        try {
+            const response = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            chatDiv.innerHTML += `<p class="mb-2"><strong>Bot:</strong> ${data.reply}</p>`;
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        } catch (err) {
+            chatDiv.innerHTML += `<p class="mb-2"><strong>Bot:</strong> Error connecting to Lambda.</p>`;
+            console.error(err);
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    messageInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Optional: start hidden
+    chatContainer.style.display = 'none';
+});
+
+
+
