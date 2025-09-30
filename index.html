@@ -233,26 +233,41 @@
     </section>
     <div id="footer-container"></div>
         <script type="module" src="frontend/assets/js/index.js"></script>
+<!-- Chatbot floating widget -->
+<div id="chatbotWidget" class="fixed bottom-4 right-4 w-[360px] max-w-full bg-[#7A8568] rounded-2xl shadow-xl flex flex-col overflow-hidden z-50 font-sans">
 
-        <!-- Chatbot floating widget -->
-<div id="chatbotWidget" class="fixed bottom-4 right-4 w-[320px] max-w-full bg-white rounded-xl shadow-lg flex flex-col overflow-hidden z-50">
-    <!-- Chat header -->
-    <div id="chatHeader" class="bg-djahit-orange text-white px-4 py-2 font-semibold cursor-pointer flex justify-between items-center">
-        <span>Chat with us</span>
-        <span id="chatToggleIcon">−</span>
+  <!-- Chat header -->
+  <div id="chatHeader" class="bg-[#7A8568] text-white px-4 py-3 flex items-center justify-between border-b border-white/20 cursor-pointer">
+    <div class="flex items-center gap-2">
+      <!-- <img src="../../frontend/assets/img/DjahitLogo.svg" class="w-12 h-12" alt="Djahit Logo"> -->
+      <span class="text-lg font-semibold">Djahit Bot</span>
     </div>
-    
-    <!-- Chat content -->
-    <div id="chatContainer" class="flex-1 p-4 overflow-y-auto max-h-80">
-        <div id="chat"></div>
-    </div>
+    <span id="chatToggleIcon" class="text-xl">+</span>
+  </div>
 
-    <!-- Input area -->
-    <div class="border-t border-gray-300 p-2 flex gap-2">
-        <textarea id="userMessage" class="flex-1 border rounded-lg p-2 text-sm resize-none h-10" placeholder="Type your message"></textarea>
-        <button id="sendBtn" class="bg-djahit-orange text-white px-4 rounded-lg hover:opacity-90">Send</button>
+  <!-- Chat content -->
+  <div id="chatContainer" class="flex-1 p-4 space-y-4 bg-[#7A8568] hidden max-h-[400px] overflow-y-auto">
+    <!-- Default Bot message -->
+    <div class="flex items-start space-x-2">
+      <div class="bg-white rounded-2xl px-4 py-3 text-sm text-[#393E30] shadow-sm max-w-[80%]">
+        Halo, Djahit Bot di sini. Ada yang bisa dibantu?
+      </div>
     </div>
+  </div>
+
+  <!-- Input area -->
+  <div class="border-t border-white/20 p-3 flex items-center gap-2 bg-[#7A8568]">
+    <input id="userMessage" type="text" class="flex-1 rounded-full px-4 py-2 text-sm bg-white placeholder-gray-400 focus:outline-none" placeholder="Ketik pertanyaanmu di sini">
+    <button id="sendBtn" class="bg-[#E07A5F] text-white rounded-full w-10 h-10 flex items-center justify-center hover:opacity-90">
+      ➤
+    </button>
+  </div>
 </div>
+
+<!-- 
+<script src="index.js"></script> -->
+
+
 
 </body>
 </html>
