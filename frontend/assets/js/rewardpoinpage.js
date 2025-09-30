@@ -1,5 +1,8 @@
 
-        document.addEventListener('DOMContentLoaded', function() {
+       function getAuthToken() {
+            return localStorage.getItem('authToken');
+        }
+       document.addEventListener('DOMContentLoaded', function() {
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');            
             const uploadArea = document.getElementById('uploadArea');

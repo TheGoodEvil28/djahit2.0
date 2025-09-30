@@ -1,4 +1,8 @@
 
+        function getAuthToken() {
+            return localStorage.getItem('authToken');
+        }
+        
         const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
         let uploadedImages = [];
         let uploadedKeys = [];
