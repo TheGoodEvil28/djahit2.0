@@ -109,7 +109,7 @@
         function checkAuth() {
             const token = getAuthToken();
             if (!token) {
-                window.location.href = '/page/login.html?error=Please log in to access this page';
+                window.location.href = '/frontend/page/login.html?error=Please log in to access this page';
                 return false;
             }
             return true;
