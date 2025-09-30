@@ -142,7 +142,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendBtn = document.getElementById('sendBtn');
     const messageInput = document.getElementById('userMessage');
 
-    if (isAuthenticated && chatWidget) chatWidget.classList.remove('hidden');
+    // Show chatbot always (for testing or guest users)
+if (chatWidget) chatWidget.classList.remove('hidden');
 
     chatHeader?.addEventListener('click', () => {
         chatContainer.classList.toggle('hidden');
