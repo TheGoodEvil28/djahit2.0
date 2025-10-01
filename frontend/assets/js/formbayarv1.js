@@ -248,13 +248,18 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
         const originalButtonText = submitButton.textContent;
         submitButton.disabled = true;
         submitButton.textContent = 'Memproses...';
+        
+        //coba cek
+        const imageData = analysisData.images[0];
+        console.log('Full image data:', imageData); 
+
 
         try {
             const apiPayload = {
-                original_img_url: analysisData.images?.[0]?.url || '',
-                img_filename: analysisData.images?.[0]?.filename || 'unknown.jpg',
-                file_size: analysisData.images?.[0]?.size || 0,
-                mime_type: analysisData.images?.[0]?.type || 'image/jpeg',
+                original_img_url: imageData.url,
+                img_filename: imageData.filename || imageData.name || imageData.url.split('/').pop().split('?')[0] || 'clothing-image.jpg',
+                file_size: parseInt(imageData.size || imageData.fileSize) || 1024, 
+                mime_type: imageData.type || imageData.mimeType || imageData.mime_type || 'image/jpeg',
                 ai_scan_desc: analysisData.analysisText || '',
                 
                 damage_type: formData.damageType || '',
@@ -279,7 +284,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
             const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.repairRequest}`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // NOW THIS WILL WORK
+                    'Authorization': `Bearer ${token}`, 
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(apiPayload)
