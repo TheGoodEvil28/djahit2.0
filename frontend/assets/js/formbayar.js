@@ -244,7 +244,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
             return;
         }
 
-        const submitButton = paymentForm.querySelector('button[type="submit"]');
+        const submitButton = document.querySelector('button[type="submit"][form="paymentForm"]');
         const originalButtonText = submitButton.textContent;
         submitButton.disabled = true;
         submitButton.textContent = 'Memproses...';
