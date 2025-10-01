@@ -1,24 +1,17 @@
  
-        // Configuration - Update with your actual API URL
         const API_CONFIG = {
             baseUrl: 'https://djahit.andikanugra.my.id', // Match your server port
             endpoints: {
                 repairRequests: '/api/repair-requests'
             }
         };
-
-        // Get token from localStorage (matches your login implementation)
         function getAuthToken() {
             return localStorage.getItem('authToken');
         }
-
-        // Get current user data
         function getCurrentUser() {
             const userData = localStorage.getItem('userData');
             return userData ? JSON.parse(userData) : null;
         }
-
-        // Check if user is logged in and redirect if not
         function checkAuth() {
             const token = getAuthToken();
             if (!token) {
@@ -27,8 +20,6 @@
             }
             return true;
         }
-
-        // Format currency
         function formatCurrency(amount) {
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',
@@ -36,8 +27,6 @@
                 minimumFractionDigits: 0
             }).format(amount);
         }
-
-        // Format date
         function formatDate(dateString) {
             const date = new Date(dateString);
             const options = { 
@@ -79,8 +68,6 @@
                 </tr>
             `;
         }
-
-        // Create mobile card
         function createMobileCard(item) {
             const statusStyle = getStatusStyle(item.status);
             const itemName = getItemDisplayName(item);
@@ -93,18 +80,6 @@
                         <div>
                             <h3 class="font-semibold text-gray-900 text-sm sm:text-base">${itemName}</h3>
                             <p class="text-gray-600 text-xs sm:text-sm">${itemType}</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="deleteItem(${item.id})" class="text-gray-400 hover:text-gray-600 p-1" title="Hapus">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                            <button onclick="editItem(${item.id})" class="text-gray-400 hover:text-gray-600 p-1" title="Edit">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#667085" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </button>
                         </div>
                     </div>
                     <div class="flex justify-between items-center mb-3">
@@ -125,36 +100,26 @@
                 </div>
             `;
         }
-
-        // Helper function to generate item display name
         function getItemDisplayName(item) {
-            // Create a display name based on damage type and clothing type
             const damageType = item.damage_type || 'Perbaikan';
-            const clothingType = item.clothing_type || 'Pakaian';
-            
-            // If there's custom description, use that
+            const clothingType = item.clothing_type || 'Pakaian';            
             if (item.damage_type === 'Lainnya' && item.damage_type_other_desc) {
                 return `${item.damage_type_other_desc} - ${clothingType}`;
             }
             
             if (item.clothing_type === 'Lainnya' && item.clothing_type_other_desc) {
                 return `${damageType} - ${item.clothing_type_other_desc}`;
-            }
-            
+            } 
             return `${damageType} - ${clothingType}`;
         }
-
-        // Fetch repair requests from API
         async function fetchRepairRequests() {
             try {
                 showLoading(true);
                 hideError();
-                
                 const token = getAuthToken();
                 if (!token) {
                     throw new Error('Token tidak ditemukan. Silakan login kembali.');
                 }
-
                 const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.repairRequests}`, {
                     method: 'GET',
                     headers: {
@@ -162,10 +127,8 @@
                         'Content-Type': 'application/json'
                     }
                 });
-
                 if (!response.ok) {
                     if (response.status === 401) {
-                        // Token expired or invalid, redirect to login
                         localStorage.removeItem('authToken');
                         localStorage.removeItem('userData');
                         window.location.href = '/frontend/page/login.html?error=session_expired';
@@ -176,10 +139,7 @@
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                 }
-
                 const result = await response.json();
-                
-                // Handle your backend response structure
                 if (result.success && result.data && result.data.repair_requests) {
                     populateTable(result.data.repair_requests);
                 } else if (result.success && result.data && Array.isArray(result.data)) {
@@ -187,7 +147,6 @@
                 } else {
                     throw new Error(result.error?.message || 'Invalid response format');
                 }
-
             } catch (error) {
                 console.error('Error fetching repair requests:', error);
                 showError(error.message);
@@ -195,38 +154,27 @@
                 showLoading(false);
             }
         }
-
-        // Populate table with data
         function populateTable(data) {
             const desktopTableBody = document.getElementById('desktop-table-body');
             const mobileCards = document.getElementById('mobile-cards');
             const desktopTable = document.getElementById('desktop-table');
             const emptyState = document.getElementById('empty-state');
-
             if (data.length === 0) {
                 desktopTable.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 mobileCards.innerHTML = '';
                 return;
             }
-
             emptyState.classList.add('hidden');
             desktopTable.classList.remove('hidden');
-
-            // Populate desktop table
             desktopTableBody.innerHTML = data.map(item => createDesktopRow(item)).join('');
-
-            // Populate mobile cards
             mobileCards.innerHTML = data.map(item => createMobileCard(item)).join('');
         }
-
-        // Show/hide loading state
         function showLoading(show) {
             const loading = document.getElementById('loading');
             const desktopTable = document.getElementById('desktop-table');
             const mobileCards = document.getElementById('mobile-cards');
             const emptyState = document.getElementById('empty-state');
-
             if (show) {
                 loading.classList.remove('hidden');
                 desktopTable.classList.add('hidden');
@@ -236,43 +184,25 @@
                 loading.classList.add('hidden');
             }
         }
-
-        // Show error message
         function showError(message) {
             const errorDiv = document.getElementById('error');
             const errorMessage = document.getElementById('error-message');
             errorMessage.textContent = message;
             errorDiv.classList.remove('hidden');
         }
-
-        // Hide error message
         function hideError() {
             const errorDiv = document.getElementById('error');
             errorDiv.classList.add('hidden');
         }
-
-        
-
-        // Refresh data
         function refreshData() {
             fetchRepairRequests();
         }
-
-        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Check authentication first
             if (!checkAuth()) {
-                return; // Exit if not authenticated
+                return; 
             }
-
-            // Load navbar and footer
             $('#navbar-container').load('navbar.html');
-            $('#footer-container').load('footer.html');
-            
-            // Fetch repair requests data
+            $('#footer-container').load('footer.html');            
             fetchRepairRequests();
         });
-
-        // Auto refresh every 5 minutes (optional)
-        // setInterval(refreshData, 5 * 60 * 1000);
-   
+        setInterval(refreshData, 2 * 60 * 1000);

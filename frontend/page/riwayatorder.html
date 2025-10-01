@@ -41,20 +41,16 @@
         <div class="max-w-7xl mx-auto">
             <div class="bg-section-white min-h-[620px] rounded-2xl p-4 sm:p-8">
                 <h2 class="text-base sm:text-lg font-medium border-b border-[#A3B18A] pb-2 mx-2 sm:mx-6 text-button-green mb-6">Riwayat Pesanan Perbaikan</h2>
-                
                 <div id="loading" class="flex justify-center items-center h-64">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-button-green"></div>
                 </div>
-                
                 <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                     <span id="error-message"></span>
                 </div>
-                
                 <div id="empty-state" class="hidden text-center py-12">
                     <div class="text-gray-400 text-lg mb-2">Tidak ada data pesanan</div>
                     <div class="text-gray-500 text-sm">Belum ada pesanan perbaikan yang dibuat</div>
                 </div>
-                
                 <div id="desktop-table" class="hidden lg:block overflow-x-auto">
                     <table class="w-full">
                         <thead>
@@ -63,20 +59,19 @@
                                 <th class="px-6 py-4 text-left text-xs font-medium">Jenis Pakaian</th>
                                 <th class="px-6 py-4 text-left text-xs font-medium">Total Pembayaran</th>
                                 <th class="px-6 py-4 text-left text-xs font-medium">Tanggal Pemesanan</th>
-                                <th class="px-6 py-4 text-center text-xs font-medium  rounded-tr-2xl">Status</th>
+                                <th class="px-6 py-4 text-center text-xs font-medium rounded-tr-2xl">Status</th>
                             </tr>
                         </thead>                        
                         <tbody id="desktop-table-body" class="divide-y divide-gray-200">
                         </tbody>
                     </table>
                 </div>
-                
                 <div id="mobile-cards" class="lg:hidden space-y-4">
                 </div>
             </div>
         </div>
     </div>
     <div id="footer-container"></div>
-        <script type="module" src="../assets/js/riwayatorderv1.js"></script>
+        <script type="module" src="../assets/js/riwayatorderv2.js"></script>
 </body>
 </html>
