@@ -10,7 +10,42 @@
         document.addEventListener('DOMContentLoaded', function() {
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');
-            
+            const currentUser = getCurrentUser();
+            if (!currentUser.phone.match(/^(\+62|62|0)[0-9]{9,13}$/)) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 max-w-md">
+                        <h3 class="text-xl font-bold text-red-600 mb-4">Nomor Telepon Tidak Valid</h3>
+                        <p class="text-gray-700 mb-2">Nomor telepon Anda <strong>${currentUser.phone}</strong> tidak sesuai format Indonesia yang valid.</p>
+                        <p class="text-gray-700 mb-4">Format yang diterima:</p>
+                        <ul class="list-disc list-inside text-gray-600 mb-4 text-sm">
+                            <li>08xxxxxxxxxx (contoh: 08123456789)</li>
+                            <li>+628xxxxxxxxxx (contoh: +628123456789)</li>
+                            <li>628xxxxxxxxxx (contoh: 628123456789)</li>
+                        </ul>
+                        <p class="text-gray-700 mb-4">Silakan perbarui nomor telepon Anda di halaman profil.</p>
+                        <p class="text-center text-lg font-bold text-djahit-orange">Redirect dalam <span id="countdown">5</span> detik...</p>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                let seconds = 5;
+                const countdownEl = document.getElementById('countdown');
+                const interval = setInterval(() => {
+                    seconds--;
+                    countdownEl.textContent = seconds;
+                    if (seconds <= 0) {
+                        clearInterval(interval);
+                        window.location.href = '/frontend/page/profile.html';
+                    }
+                }, 1000);
+                const form = document.querySelector('form');
+                if (form) {
+                    form.style.pointerEvents = 'none';
+                    form.style.opacity = '0.5';
+                }
+                return;
+            }
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
             const imageSlots = document.querySelectorAll('.image-slot');
@@ -322,4 +357,7 @@
                 window.location.href = '../../frontend/page/forminput.html';
             };
         });
-    
+    function getCurrentUser() {
+            const userData = localStorage.getItem('userData');
+            return userData ? JSON.parse(userData) : null;
+        }

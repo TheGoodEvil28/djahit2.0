@@ -292,7 +292,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
                 
                 thread_color_pref: formData.threadColor || null,
                 
-                estimated_cost: pricing.finalPrice,
+                estimated_cost: pricing.finalPrice.toFixed(2),
                 
                 status: 'Pending'
             };
@@ -315,6 +315,20 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
 
             if (!response.ok) {
                 console.error('Full error response:', result);
+                console.error('Validation details:', result.error.details); // ← ADD THIS
+    
+                // ← ADD THIS WHOLE BLOCK
+                if (result.error.details && result.error.details.length > 0) {
+                    result.error.details.forEach((err, index) => {
+                        console.error(`Error ${index + 1}:`, {
+                            field: err.param || err.path,
+                            message: err.msg || err.message,
+                            value: err.value,
+                            location: err.location
+                        });
+                    });
+                }
+                
                 throw new Error(result.error?.message || `Server error: ${response.status}`);
             }
             if (result.success) {
