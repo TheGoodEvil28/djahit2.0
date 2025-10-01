@@ -127,8 +127,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!formData.phone) {
                     errors.push('Phone number is required');
-                } else if (!/^\d+$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
-                    errors.push('Phone number must contain only numbers');
+                } else {
+                    const cleanPhone = formData.phone.replace(/[\s\-\(\)]/g, '');
+                    if (!/^(\+62|62|0)[0-9]{9,13}$/.test(cleanPhone)) {
+                        errors.push('Phone number must be valid Indonesian format (e.g., 08123456789, +628123456789, or 628123456789)');
+                    }
                 }
 
                 if (!formData.terms) {
