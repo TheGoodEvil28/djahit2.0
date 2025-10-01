@@ -159,15 +159,22 @@
             const mobileCards = document.getElementById('mobile-cards');
             const desktopTable = document.getElementById('desktop-table');
             const emptyState = document.getElementById('empty-state');
+            
             if (data.length === 0) {
                 desktopTable.classList.add('hidden');
+                mobileCards.classList.add('hidden');
                 emptyState.classList.remove('hidden');
-                mobileCards.innerHTML = '';
                 return;
             }
+            
             emptyState.classList.add('hidden');
+            
             desktopTable.classList.remove('hidden');
+            desktopTable.classList.add('lg:block');
             desktopTableBody.innerHTML = data.map(item => createDesktopRow(item)).join('');
+            
+            mobileCards.classList.remove('hidden');
+            mobileCards.classList.add('lg:hidden');
             mobileCards.innerHTML = data.map(item => createMobileCard(item)).join('');
         }
         function showLoading(show) {
