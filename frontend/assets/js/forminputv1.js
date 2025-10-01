@@ -361,3 +361,43 @@
             const userData = localStorage.getItem('userData');
             return userData ? JSON.parse(userData) : null;
         }
+        const dropdownButton = document.getElementById('dropdown-button');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const selectedText = document.getElementById('selected-text');
+        const actualSelect = document.getElementById('actual-size');
+        const dropdownArrow = document.querySelector('.dropdown-arrow');
+        const dropdownOptions = document.querySelectorAll('.dropdown-option');
+
+        
+        dropdownButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('open');
+            dropdownArrow.classList.toggle('open');
+        });
+        dropdownOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                const text = this.textContent.trim();
+                selectedText.textContent = text;
+                selectedText.classList.remove('text-gray-400');
+                selectedText.classList.add('text-gray-700');
+                actualSelect.value = value;
+                dropdownMenu.classList.remove('open');
+                dropdownArrow.classList.remove('open');
+                dropdownOptions.forEach(opt => opt.classList.remove('bg-djahit-orange', 'text-white'));
+                //below optional                
+                this.classList.add('bg-djahit-orange', 'text-white');
+            });
+        });
+        document.addEventListener('click', function(e) {
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.remove('open');
+                dropdownArrow.classList.remove('open');
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                dropdownMenu.classList.remove('open');
+                dropdownArrow.classList.remove('open');
+            }
+        });

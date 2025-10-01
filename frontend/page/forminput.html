@@ -185,20 +185,59 @@
                                 <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
                                     Ukuran Pakaian*
                                 </label>
-                                <select 
-                                    name="size"
-                                    required
-                                    class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base appearance-none cursor-pointer text-gray-700 custom-select"
-                                    style="background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23AFB2C3%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3e%3cpolyline points=%276 9 12 15 18 9%27%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25em; padding-right: 2.5rem;">
-                                    <option value="" disabled selected class="text-gray-400">Pilih ukuran</option>
-                                    <option value="XS" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">XS - Extra Small</option>
-                                    <option value="S" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">S - Small</option>
-                                    <option value="M" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">M - Medium</option>
-                                    <option value="L" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">L - Large</option>
-                                    <option value="XL" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">XL - Extra Large</option>
-                                    <option value="XXL" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">XXL - Double Extra Large</option>
-                                    <option value="XXXL" class="py-2 text-gray-700 hover:bg-djahit-orange hover:text-white">XXXL - Triple Extra Large</option>
+                                
+                                <!-- Hidden actual select for form submission -->
+                                <select name="size" id="actual-size" class="hidden" required>
+                                    <option value="">Pilih ukuran</option>
+                                    <option value="XS">XS</option>
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                    <option value="XXXL">XXXL</option>
                                 </select>
+                                
+                                <!-- Custom dropdown display -->
+                                <div class="relative">
+                                    <button 
+                                        type="button"
+                                        id="dropdown-button"
+                                        class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base text-left flex items-center justify-between cursor-pointer"
+                                    >
+                                        <span id="selected-text" class="text-gray-400">Pilih ukuran</span>
+                                        <svg class="w-5 h-5 text-[#AFB2C3] dropdown-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    
+                                    <!-- Dropdown menu -->
+                                    <div id="dropdown-menu" class="dropdown-menu absolute z-10 w-full mt-1 bg-white border border-[#AFB2C3] rounded-lg shadow-lg">
+                                        <div class="py-1">
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="XS">
+                                                XS - Extra Small
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="S">
+                                                S - Small
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="M">
+                                                M - Medium
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="L">
+                                                L - Large
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="XL">
+                                                XL - Extra Large
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="XXL">
+                                                XXL - Double Extra Large
+                                            </div>
+                                            <div class="dropdown-option px-4 py-3 text-sm md:text-base cursor-pointer hover:bg-djahit-orange hover:text-white transition-colors" data-value="XXXL">
+                                                XXXL - Triple Extra Large
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
@@ -264,6 +303,6 @@
             </div>
         </div>
         <div id="footer-container"></div>
-        <script type="module" src="../assets/js/forminput.js"></script>
+        <script type="module" src="../assets/js/forminputv1.js"></script>
     </body>
     </html>
