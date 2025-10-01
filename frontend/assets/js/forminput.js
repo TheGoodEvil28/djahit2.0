@@ -204,7 +204,7 @@
                         
                         const damageType = document.querySelector('input[name="damage_type"]:checked');
                         const clothingType = document.querySelector('input[name="clothing_type"]:checked');
-                        const size = document.querySelector('input[name="size"]').value;
+                        const size = document.querySelector('select[name="size"]').value;
                         const location = document.querySelector('input[name="location"]').value;
                         
                         if (!damageType || !clothingType || !size.trim() || !location.trim()) {
