@@ -378,7 +378,7 @@ function initializeChatbot(isAuthenticated) {
             const response = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
                 method: "POST",
                 headers: { 
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json"
                     // "Authorization": `Bearer ${authToken}`
                 },
                 body: JSON.stringify(payload)
