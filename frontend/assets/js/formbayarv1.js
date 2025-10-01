@@ -292,7 +292,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
                 
                 thread_color_pref: formData.threadColor || null,
                 
-                estimated_cost: pricing.finalPrice,
+                estimated_cost: pricing.finalPrice.toFixed(2),
                 
                 status: 'Pending'
             };
