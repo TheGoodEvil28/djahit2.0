@@ -9,7 +9,7 @@
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="../assets/js/auth-guard.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <style src="../assets/css/forminput.css"></style>
+        <style src="../assets/css/forminputv1.css"></style>
         <script>
             tailwind.config = {
                 theme: {
@@ -182,11 +182,9 @@
                                 ></textarea>
                             </div>
                             <div class="relative">
-                                <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
+                                <label class="block text-sm md:text-base font-medium text-[#69675F] mb-2">
                                     Ukuran Pakaian*
                                 </label>
-                                
-                                <!-- Hidden actual select for form submission -->
                                 <select name="size" id="actual-size" class="hidden" required>
                                     <option value="">Pilih ukuran</option>
                                     <option value="XS">XS</option>

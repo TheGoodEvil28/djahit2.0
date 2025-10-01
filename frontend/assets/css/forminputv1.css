@@ -1,3 +1,18 @@
+.dropdown-arrow {
+    transition: transform 0.3s ease;
+}
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+.dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.dropdown-menu.open {
+    max-height: 300px;
+    overflow-y: auto;
+}
 .custom-select option {
     padding: 12px 16px;
     background-color: white;
