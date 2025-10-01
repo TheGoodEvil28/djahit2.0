@@ -357,4 +357,7 @@
                 window.location.href = '../../frontend/page/forminput.html';
             };
         });
-    
+    function getCurrentUser() {
+            const userData = localStorage.getItem('userData');
+            return userData ? JSON.parse(userData) : null;
+        }
