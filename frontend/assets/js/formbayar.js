@@ -249,6 +249,24 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
         submitButton.disabled = true;
         submitButton.textContent = 'Memproses...';
         
+        const capitalizeFirst = (str) => {
+            if (!str) return str;
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        };
+
+        const damageTypeMap = {
+            'sobek': 'Sobek',
+            'kancing_hilang': 'Kancing Hilang',
+            'resleting_rusak': 'Resleting Rusak',
+            'lainnya': 'Lainnya'
+        };
+
+        const clothingTypeMap = {
+            'baju': 'Baju',
+            'celana': 'Celana',
+            'outer': 'Outer',
+            'lainnya': 'Lainnya'
+        };
         //coba cek
         const imageData = analysisData.images[0];
         console.log('Full image data:', imageData); 
@@ -265,9 +283,9 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
                 damage_type: formData.damageType || '',
                 damage_type_other_desc: formData.damageDescription || null,
                 
-                clothing_type: formData.clothingType || '',
+                clothing_type: clothingTypeMap[formData.clothingType] || 'Lainnya',
                 clothing_type_other_desc: formData.clothingDescription || null,
-                clothing_size: formData.size || '',
+                clothing_size: formData.size.toUpperCase(),
                 
                 pickup_location: formData.location || '',
                 pickup_phone: currentUser.phone, 
@@ -276,7 +294,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
                 
                 estimated_cost: pricing.finalPrice,
                 
-                status: 'pending'
+                status: 'Pending'
             };
 
             console.log('Sending payload:', apiPayload);
@@ -292,10 +310,13 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
 
             const result = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.error?.message || 'Failed to create repair request');
-            }
+            console.log('Response status:', response.status);
+            console.log('Response data:', result);
 
+            if (!response.ok) {
+                console.error('Full error response:', result);
+                throw new Error(result.error?.message || `Server error: ${response.status}`);
+            }
             if (result.success) {
                 const paymentMethodName = payment.type === 'custom' 
                     ? payment.value 
