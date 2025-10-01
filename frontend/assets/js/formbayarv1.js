@@ -280,9 +280,9 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
                 mime_type: imageData.type || imageData.mimeType || imageData.mime_type || 'image/jpeg',
                 ai_scan_desc: analysisData.analysisText || '',
                 
-                damage_type: formData.damageType || '',
+                damage_type: damageTypeMap[formData.damageType] || 'Lainnya',
                 damage_type_other_desc: formData.damageDescription || null,
-                
+        
                 clothing_type: clothingTypeMap[formData.clothingType] || 'Lainnya',
                 clothing_type_other_desc: formData.clothingDescription || null,
                 clothing_size: formData.size.toUpperCase(),
