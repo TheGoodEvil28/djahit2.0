@@ -229,6 +229,21 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
             }
             return;
         }
+
+        const token = getAuthToken();
+        if (!token) {
+            alert('Anda harus login terlebih dahulu');
+            window.location.href = '/frontend/page/login.html';
+            return;
+        }
+
+        const currentUser = getCurrentUser();
+        if (!currentUser || !currentUser.phone) {
+            alert('Data user tidak lengkap. Silakan login kembali.');
+            window.location.href = '/frontend/page/login.html';
+            return;
+        }
+
         const submitButton = paymentForm.querySelector('button[type="submit"]');
         const originalButtonText = submitButton.textContent;
         submitButton.disabled = true;
@@ -264,7 +279,7 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
             const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.repairRequest}`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${token}`, // NOW THIS WILL WORK
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(apiPayload)
