@@ -1,9 +1,3 @@
-ChatGPT said:
-
-Got it 👍 the issue is that on GitHub’s README.md, formatting needs proper Markdown syntax (headings, line breaks, lists, emojis spacing, etc.).
-
-Here’s a fixed version of your README with proper Markdown so it looks clean and professional on GitHub:
-
 # 🧵 Djahit
 
 **Djahit** is a SaaS platform that connects users with local tailors for clothing repairs and alterations.  
@@ -64,3 +58,4 @@ Open a Pull Request
 📜 License
 
 This project is licensed under the MIT License – feel free to use and modify!
+
