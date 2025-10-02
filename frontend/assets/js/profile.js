@@ -211,18 +211,22 @@
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');
             initializePage();
+            setTimeout(() => {
             const editForm = document.getElementById('edit-profile-form');
-    if (editForm) {
-        editForm.addEventListener('submit', handleEditFormSubmit);
-    }
+            if (editForm) {
+                editForm.addEventListener('submit', handleEditFormSubmit);
+            }
 
-    const editButtons = document.querySelectorAll('.mobile-button');
-    editButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            openEditModal();
-        });
-    });
+            const editButtons = document.querySelectorAll('.mobile-button');
+            console.log('Found buttons:', editButtons.length); // Debug
+            editButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Button clicked!'); // Debug
+                    openEditModal();
+                });
+            });
+        }, 500);
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {

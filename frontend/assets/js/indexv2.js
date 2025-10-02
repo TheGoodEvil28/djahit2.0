@@ -4,9 +4,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const isAuthenticated = getAuthToken() !== null;
-    const navbarPath = isAuthenticated ? 'frontend/page/navbar.html' : 'frontend/page/guestnavbar.html';
+    // const navbarPath =  'frontend/page/navbar.html';
     
-    $('#navbar-container').load(navbarPath);
+    $('#navbar-container').load('frontend/page/navbar.html', function() {
+        // Force navbar initialization after load
+        setTimeout(() => {
+            if (typeof window.initializeDjahitNavbarWithAuth === 'function') {
+                window.initializeDjahitNavbarWithAuth();
+            }
+        }, 100);
+    });    
     $('#footer-container').load('frontend/page/footer.html');
     
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');

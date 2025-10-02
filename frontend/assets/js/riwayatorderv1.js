@@ -159,14 +159,25 @@
             const mobileCards = document.getElementById('mobile-cards');
             const desktopTable = document.getElementById('desktop-table');
             const emptyState = document.getElementById('empty-state');
+            
             if (data.length === 0) {
-                desktopTable.classList.add('hidden');
+                desktopTable.style.display = 'none';
+                mobileCards.style.display = 'none';
                 emptyState.classList.remove('hidden');
-                mobileCards.innerHTML = '';
                 return;
             }
+            
             emptyState.classList.add('hidden');
-            desktopTable.classList.remove('hidden');
+            
+            // Desktop table - only show on large screens (>= 1024px)
+            if (window.innerWidth >= 1024) {
+                desktopTable.style.display = 'block';
+                mobileCards.style.display = 'none';
+            } else {
+                desktopTable.style.display = 'none';
+                mobileCards.style.display = 'block';
+            }
+            
             desktopTableBody.innerHTML = data.map(item => createDesktopRow(item)).join('');
             mobileCards.innerHTML = data.map(item => createMobileCard(item)).join('');
         }
@@ -178,7 +189,7 @@
             if (show) {
                 loading.classList.remove('hidden');
                 desktopTable.classList.add('hidden');
-                mobileCards.innerHTML = '';
+                mobileCards.classList.add('hidden');
                 emptyState.classList.add('hidden');
             } else {
                 loading.classList.add('hidden');
@@ -204,5 +215,19 @@
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');            
             fetchRepairRequests();
+            window.addEventListener('resize', function() {
+                const desktopTable = document.getElementById('desktop-table');
+                const mobileCards = document.getElementById('mobile-cards');
+                
+                if (desktopTable && mobileCards) {
+                    if (window.innerWidth >= 1024) {
+                        desktopTable.style.display = 'block';
+                        mobileCards.style.display = 'none';
+                    } else {
+                        desktopTable.style.display = 'none';
+                        mobileCards.style.display = 'block';
+                    }
+                }
+            });
         });
         setInterval(refreshData, 2 * 60 * 1000);
