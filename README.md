@@ -32,8 +32,11 @@ Your browser will open automatically and load login.html.
 🎨 Features
 
 ✅ Easy online booking for clothing repairs and alterations
+
 ✅ Supports local tailors and SMEs
+
 ✅ Promotes sustainable fashion and reduces clothing waste
+
 ✅ Mobile-first & user-friendly interface
 
 
@@ -53,3 +56,4 @@ Contributions are welcome! 🎉
 📜 License
 
 This project is licensed under the MIT License – feel free to use and modify!
+
