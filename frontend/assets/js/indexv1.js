@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     const isAuthenticated = getAuthToken() !== null;
-    const navbarPath = isAuthenticated ? 'frontend/page/navbar.html' : 'frontend/page/guestnavbar.html';
+    const navbarPath =  'frontend/page/navbar.html';
     
     $('#navbar-container').load(navbarPath);
     $('#footer-container').load('frontend/page/footer.html');
