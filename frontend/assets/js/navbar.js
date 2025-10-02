@@ -1,7 +1,8 @@
 
 (function() {
     'use strict';
-    
+    window.initializeDjahitNavbarWithAuth = initializeDjahitNavbarWithAuth;
+
     // Original navbar functionality
     function initializeDjahitNavbar() {
         console.log('Initializing Djahit Navbar...');
