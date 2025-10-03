@@ -405,7 +405,7 @@
         // Add this to your existing forminput.js file
 // Location Modal Integration Code
 
-const API_KEY = '8e49f28e0f2f2cf56393c352613eec358e85fb7077ce6f7f453ebb826a7b1f6d';
+const API_KEY = '3bc8eb9f8b0767b9d31fb96171e5efc4dfcb3f487fac1d2168cdc8a75ab08d0b';
 const BASE_URL = 'https://api.binderbyte.com/wilayah';
 
 // Location state - stored in memory, NOT localStorage
