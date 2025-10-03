@@ -1,28 +1,32 @@
-
-@media (min-width: 768px) and (max-width: 1023px) {
-    .lg\:px-16 {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
+.djahit-logo {
+    width: 140px !important;
+    height: 60px !important;
+    min-width: 140px !important;
+    min-height: 60px !important;
+    max-width: 140px !important;
+    max-height: 60px !important;
+    object-fit: contain !important;
+    display: block !important;
 }
-[data-navbar-mobile-menu] {
-    transition: all 0.3s ease-in-out;
-}
-[data-navbar-mobile-avatar-modal] {
-    transition: all 0.3s ease-in-out;
-}
+[data-navbar-mobile-menu],
+[data-navbar-mobile-avatar-modal],
 [data-navbar-avatar-dropdown] {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
 }
 .hover\:text-djahit-orange:hover {
     color: #E07A5F !important;
 }
+button:hover img {
+    filter: brightness(0.8);
+    transition: filter 0.2s ease-in-out;
+}
 [data-navbar-mobile-btn], 
 [data-navbar-avatar-btn], 
 [data-navbar-mobile-avatar-btn] {
-    cursor: pointer;
+    cursor: pointer !important;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 [data-navbar-mobile-btn]:active, 
 [data-navbar-avatar-btn]:active, 
@@ -42,30 +46,6 @@
         opacity: 1;
     }
 }
-@media (max-width: 768px) {
-    nav img[alt="Djahit Logo"] {
-        height: 1.5rem;
-    }
-}
-@media (min-width: 768px) and (max-width: 1023px) {
-    nav img[alt="Djahit Logo"] {
-        height: 2rem;
-    }
-}
-.djahit-logo {
-            width: 140px !important;
-            height: 60px !important;
-            min-width: 140px !important;
-            min-height: 60px !important;
-            max-width: 140px !important;
-            max-height: 60px !important;
-            object-fit: contain !important;
-            display: block !important;
-        }
-button:hover img {
-    filter: brightness(0.8);
-    transition: filter 0.2s ease-in-out;
-}
 [data-navbar-mobile-menu] {
     z-index: 50;
 }
@@ -78,16 +58,53 @@ button:hover img {
 nav * {
     box-sizing: border-box;
 }
-nav input, nav textarea, nav button {
+nav input, 
+nav textarea, 
+nav button {
     font-family: inherit;
 }
-.djahit-logo {
-            width: 140px !important;
-            height: 60px !important;
-            min-width: 140px !important;
-            min-height: 60px !important;
-            max-width: 140px !important;
-            max-height: 60px !important;
-            object-fit: contain !important;
-            display: block !important;
-        }
+@media (max-width: 767px) {
+    nav img[alt="Djahit Logo"] {
+        height: 1.5rem;
+    }
+    [data-navbar-mobile-btn] {
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    [data-navbar-mobile-menu] {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    nav img[alt="Djahit Logo"] {
+        height: 2rem;
+    }    
+    .lg\:px-16 {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+@media (min-width: 1024px) {
+    [data-navbar-mobile-menu],
+    [data-navbar-mobile-avatar-modal] {
+        display: none !important;
+    }
+}
+[data-navbar-avatar-dropdown] {
+    min-width: 250px;
+}
+nav a,
+nav button {
+    transition: all 0.2s ease-in-out;
+}
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+nav {
+    position: relative;
+    z-index: 40;
+}
