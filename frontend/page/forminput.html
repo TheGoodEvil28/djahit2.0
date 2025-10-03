@@ -7,7 +7,7 @@
         <title>Djahit - Upload Images</title>
         <link rel="icon" type="image/x-icon" href="../../frontend/assets/img/logo.svg">
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="../assets/css/forminputv1.css">
+        <link rel="stylesheet" href="../assets/css/forminput.css">
         <script src="https://cdn.tailwindcss.com"></script>
         <script src="../assets/js/auth-guard.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -238,12 +238,83 @@
                                 <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
                                     Lokasi Pick Up*
                                 </label>
-                                <input 
-                                    type="text"
-                                    name="location"
-                                    placeholder="Inputan Pengguna"
-                                    class="w-full px-3 md:px-4 py-2 md:py-3 bg-transparent border border-[#AFB2C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent text-sm md:text-base"
-                                >
+                                <div class="location-input-wrapper">
+                                    <input 
+                                        type="text"
+                                        name="location"
+                                        id="location-display"
+                                        placeholder="Klik untuk memilih lokasi"
+                                        class="location-input-field"
+                                        readonly
+                                        required
+                                    />
+                                    <svg class="location-input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="location-modal" id="location-modal">
+                                <div class="location-modal-content">
+                                    <div class="location-modal-header">
+                                        <h2 class="location-modal-title">Pilih Lokasi Pick Up</h2>
+                                        <button class="location-close-btn" id="location-close-modal" type="button">&times;</button>
+                                    </div>
+                                    <div class="location-modal-body">
+                                        <div class="location-dropdown-field">
+                                            <label>Provinsi</label>
+                                            <div class="location-custom-select">
+                                                <button type="button" class="location-select-button" id="provinsi-btn">
+                                                    <span class="location-select-text" id="provinsi-text">Pilih provinsi</span>
+                                                    <svg class="location-select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </button>
+                                                <div class="location-select-dropdown" id="provinsi-dropdown"></div>
+                                            </div>
+                                        </div>
+                                        <div class="location-dropdown-field">
+                                            <label>Kota/Kabupaten</label>
+                                            <div class="location-custom-select">
+                                                <button type="button" class="location-select-button disabled" id="kota-btn">
+                                                    <span class="location-select-text" id="kota-text">Pilih kota/kabupaten</span>
+                                                    <svg class="location-select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </button>
+                                                <div class="location-select-dropdown" id="kota-dropdown"></div>
+                                            </div>
+                                        </div>
+                                        <div class="location-dropdown-field">
+                                            <label>Kecamatan</label>
+                                            <div class="location-custom-select">
+                                                <button type="button" class="location-select-button disabled" id="kecamatan-btn">
+                                                    <span class="location-select-text" id="kecamatan-text">Pilih kecamatan</span>
+                                                    <svg class="location-select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </button>
+                                                <div class="location-select-dropdown" id="kecamatan-dropdown"></div>
+                                            </div>
+                                        </div>
+                                        <div class="location-dropdown-field">
+                                            <label>Kelurahan/Desa</label>
+                                            <div class="location-custom-select">
+                                                <button type="button" class="location-select-button disabled" id="kelurahan-btn">
+                                                    <span class="location-select-text" id="kelurahan-text">Pilih kelurahan/desa</span>
+                                                    <svg class="location-select-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </button>
+                                                <div class="location-select-dropdown" id="kelurahan-dropdown"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="location-modal-footer">
+                                        <button class="location-btn location-btn-cancel" id="location-cancel-btn" type="button">Batal</button>
+                                        <button class="location-btn location-btn-confirm" id="location-confirm-btn" type="button" disabled>Konfirmasi</button>
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm md:text-base font-medium text-text-dark mb-2">
@@ -298,6 +369,6 @@
             </div>
         </div>
         <div id="footer-container"></div>
-        <script type="module" src="../assets/js/forminput.js"></script>
+        <script type="module" src="../assets/js/forminputv1.js"></script>
     </body>
     </html>

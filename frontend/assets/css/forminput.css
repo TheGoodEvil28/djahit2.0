@@ -1,0 +1,353 @@
+.dropdown-arrow {
+    transition: transform 0.3s ease;
+}
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+.dropdown-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+.dropdown-menu.open {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.custom-select option {
+    padding: 12px 16px;
+    background-color: white;
+    color: #414141;
+    font-size: 14px;
+}
+
+.custom-select option:hover,
+.custom-select option:checked {
+    background-color: #E07A5F !important;
+    color: white !important;
+}
+
+.custom-select option:disabled {
+    color: #9CA3AF;
+}
+
+@media (max-width: 768px) {
+    .custom-select option {
+        font-size: 16px; 
+    }
+}
+.location-input-wrapper {
+    position: relative;
+}
+
+.location-input-field {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    background: transparent;
+    border: 1px solid #AFB2C3;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.location-input-field::placeholder {
+    color: #69675F;
+}
+
+.location-input-field:hover {
+    border-color: #E07A5F;
+}
+
+.location-input-field:focus {
+    outline: none;
+    border-color: #E07A5F;
+    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1);
+}
+
+.location-input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #AFB2C3;
+    pointer-events: none;
+}
+
+/* Location Modal */
+.location-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.location-modal.active {
+    display: flex;
+}
+
+.location-modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.location-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.location-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.location-close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.location-close-btn:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.location-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.location-modal-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Location Dropdown Fields */
+.location-dropdown-field {
+    margin-bottom: 16px;
+}
+
+.location-dropdown-field label {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.location-custom-select {
+    position: relative;
+}
+
+.location-select-button {
+    width: 100%;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid #AFB2C3;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s;
+}
+
+.location-select-button:hover:not(.disabled) {
+    border-color: #E07A5F;
+}
+
+.location-select-button.disabled {
+    background: #f5f5f5;
+    cursor: not-allowed;
+    color: #999;
+}
+
+.location-select-button.open {
+    border-color: #E07A5F;
+    box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1);
+}
+
+.location-select-text {
+    color: #999;
+}
+
+.location-select-text.selected {
+    color: #333;
+}
+
+.location-select-arrow {
+    width: 16px;
+    height: 16px;
+    color: #999;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+}
+
+.location-select-button.open .location-select-arrow {
+    transform: rotate(180deg);
+}
+
+.location-select-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.location-select-dropdown.active {
+    display: block;
+}
+
+.location-select-option {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.location-select-option:hover {
+    background: #E07A5F;
+    color: white;
+}
+
+.location-select-option.loading {
+    color: #999;
+    cursor: default;
+    text-align: center;
+}
+
+.location-select-option.loading:hover {
+    background: transparent;
+    color: #999;
+}
+
+/* Modal Buttons */
+.location-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.location-btn-cancel {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.location-btn-cancel:hover {
+    background: #e5e5e5;
+}
+
+.location-btn-confirm {
+    background: #E07A5F;
+    color: white;
+}
+
+.location-btn-confirm:hover {
+    background: #d16a50;
+}
+
+.location-btn-confirm:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .location-modal-content {
+        max-width: 100%;
+        margin: 0 10px;
+    }
+    
+    .location-modal-title {
+        font-size: 16px;
+    }
+    
+    .location-dropdown-field label {
+        font-size: 12px;
+    }
+    
+    .location-select-button,
+    .location-select-option {
+        font-size: 13px;
+    }
+
+    .location-input-field {
+        font-size: 13px;
+        padding: 10px 36px 10px 14px;
+    }
+
+    .location-input-icon {
+        width: 18px;
+        height: 18px;
+        right: 10px;
+    }
+}
+
+/* Scrollbar styling for dropdowns */
+.location-select-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.location-select-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.location-select-dropdown::-webkit-scrollbar-thumb {
+    background: #E07A5F;
+    border-radius: 4px;
+}
+
+.location-select-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #d16a50;
+}

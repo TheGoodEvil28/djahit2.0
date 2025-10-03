@@ -46,6 +46,7 @@
                 }
                 return;
             }
+            initLocationModal()
             const uploadArea = document.getElementById('uploadArea');
             const fileInput = document.getElementById('fileInput');
             const imageSlots = document.querySelectorAll('.image-slot');
@@ -357,7 +358,7 @@
                 window.location.href = '../../frontend/page/forminput.html';
             };
         });
-    function getCurrentUser() {
+        function getCurrentUser() {
             const userData = localStorage.getItem('userData');
             return userData ? JSON.parse(userData) : null;
         }
@@ -401,3 +402,244 @@
                 dropdownArrow.classList.remove('open');
             }
         });
+        // Add this to your existing forminput.js file
+// Location Modal Integration Code
+
+const API_KEY = '8e49f28e0f2f2cf56393c352613eec358e85fb7077ce6f7f453ebb826a7b1f6d';
+const BASE_URL = 'https://api.binderbyte.com/wilayah';
+
+// Location state - stored in memory, NOT localStorage
+const locationState = {
+    provinsi: null,
+    kota: null,
+    kecamatan: null,
+    kelurahan: null
+};
+
+// Initialize location modal when DOM is ready
+function initLocationModal() {
+    const locationModal = document.getElementById('location-modal');
+    const locationDisplay = document.getElementById('location-display');
+    const closeLocationModal = document.getElementById('location-close-modal');
+    const cancelLocationBtn = document.getElementById('location-cancel-btn');
+    const confirmLocationBtn = document.getElementById('location-confirm-btn');
+
+    // Open modal
+    locationDisplay.addEventListener('click', () => {
+        locationModal.classList.add('active');
+        loadProvinsi();
+    });
+
+    // Close modal functions
+    const closeModalFn = () => {
+        locationModal.classList.remove('active');
+    };
+
+    closeLocationModal.addEventListener('click', closeModalFn);
+    cancelLocationBtn.addEventListener('click', closeModalFn);
+
+    locationModal.addEventListener('click', (e) => {
+        if (e.target === locationModal) closeModalFn();
+    });
+
+    // Escape key to close
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && locationModal.classList.contains('active')) {
+            closeModalFn();
+        }
+    });
+
+    // Confirm selection
+    confirmLocationBtn.addEventListener('click', () => {
+        const fullLocation = `${locationState.kelurahan.name}, ${locationState.kecamatan.name}, ${locationState.kota.name}, ${locationState.provinsi.name}`;
+        locationDisplay.value = fullLocation;
+        closeModalFn();
+    });
+
+    // Setup all dropdowns
+    setupLocationSelect('provinsi-btn', 'provinsi-dropdown', 'provinsi-text', (data) => {
+        locationState.provinsi = data;
+        locationState.kota = null;
+        locationState.kecamatan = null;
+        locationState.kelurahan = null;
+
+        document.getElementById('kota-btn').classList.remove('disabled');
+        document.getElementById('kecamatan-btn').classList.add('disabled');
+        document.getElementById('kelurahan-btn').classList.add('disabled');
+
+        document.getElementById('kota-text').textContent = 'Pilih kota/kabupaten';
+        document.getElementById('kota-text').classList.remove('selected');
+        document.getElementById('kecamatan-text').textContent = 'Pilih kecamatan';
+        document.getElementById('kecamatan-text').classList.remove('selected');
+        document.getElementById('kelurahan-text').textContent = 'Pilih kelurahan/desa';
+        document.getElementById('kelurahan-text').classList.remove('selected');
+
+        confirmLocationBtn.disabled = true;
+        loadKota(data.id);
+    });
+
+    setupLocationSelect('kota-btn', 'kota-dropdown', 'kota-text', (data) => {
+        locationState.kota = data;
+        locationState.kecamatan = null;
+        locationState.kelurahan = null;
+
+        document.getElementById('kecamatan-btn').classList.remove('disabled');
+        document.getElementById('kelurahan-btn').classList.add('disabled');
+
+        document.getElementById('kecamatan-text').textContent = 'Pilih kecamatan';
+        document.getElementById('kecamatan-text').classList.remove('selected');
+        document.getElementById('kelurahan-text').textContent = 'Pilih kelurahan/desa';
+        document.getElementById('kelurahan-text').classList.remove('selected');
+
+        confirmLocationBtn.disabled = true;
+        loadKecamatan(data.id);
+    });
+
+    setupLocationSelect('kecamatan-btn', 'kecamatan-dropdown', 'kecamatan-text', (data) => {
+        locationState.kecamatan = data;
+        locationState.kelurahan = null;
+
+        document.getElementById('kelurahan-btn').classList.remove('disabled');
+
+        document.getElementById('kelurahan-text').textContent = 'Pilih kelurahan/desa';
+        document.getElementById('kelurahan-text').classList.remove('selected');
+
+        confirmLocationBtn.disabled = true;
+        loadKelurahan(data.id);
+    });
+
+    setupLocationSelect('kelurahan-btn', 'kelurahan-dropdown', 'kelurahan-text', (data) => {
+        locationState.kelurahan = data;
+        confirmLocationBtn.disabled = false;
+    });
+}
+
+// Custom select handler
+function setupLocationSelect(buttonId, dropdownId, textId, onSelect) {
+    const btn = document.getElementById(buttonId);
+    const dropdown = document.getElementById(dropdownId);
+    const text = document.getElementById(textId);
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (btn.classList.contains('disabled')) return;
+
+        const isOpen = dropdown.classList.contains('active');
+        closeAllLocationDropdowns();
+
+        if (!isOpen) {
+            dropdown.classList.add('active');
+            btn.classList.add('open');
+        }
+    });
+
+    dropdown.addEventListener('click', (e) => {
+        if (e.target.classList.contains('location-select-option') && !e.target.classList.contains('loading')) {
+            const id = e.target.dataset.id;
+            const name = e.target.dataset.name;
+
+            text.textContent = name;
+            text.classList.add('selected');
+            dropdown.classList.remove('active');
+            btn.classList.remove('open');
+
+            onSelect({ id, name });
+        }
+    });
+}
+
+function closeAllLocationDropdowns() {
+    document.querySelectorAll('.location-select-dropdown').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.location-select-button').forEach(b => b.classList.remove('open'));
+}
+
+// API functions
+async function loadProvinsi() {
+    const dropdown = document.getElementById('provinsi-dropdown');
+    dropdown.innerHTML = '<div class="location-select-option loading">Memuat...</div>';
+
+    try {
+        const response = await fetch(`${BASE_URL}/provinsi?api_key=${API_KEY}`);
+        const data = await response.json();
+
+        if (data.code === '200') {
+            dropdown.innerHTML = data.value.map(prov => 
+                `<div class="location-select-option" data-id="${prov.id}" data-name="${prov.name}">${prov.name}</div>`
+            ).join('');
+        } else {
+            dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+        }
+    } catch (error) {
+        console.error('Error loading provinsi:', error);
+        dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+    }
+}
+
+async function loadKota(provinsiId) {
+    const dropdown = document.getElementById('kota-dropdown');
+    dropdown.innerHTML = '<div class="location-select-option loading">Memuat...</div>';
+
+    try {
+        const response = await fetch(`${BASE_URL}/kabupaten?api_key=${API_KEY}&id_provinsi=${provinsiId}`);
+        const data = await response.json();
+
+        if (data.code === '200') {
+            dropdown.innerHTML = data.value.map(kota => 
+                `<div class="location-select-option" data-id="${kota.id}" data-name="${kota.name}">${kota.name}</div>`
+            ).join('');
+        } else {
+            dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+        }
+    } catch (error) {
+        console.error('Error loading kota:', error);
+        dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+    }
+}
+
+async function loadKecamatan(kotaId) {
+    const dropdown = document.getElementById('kecamatan-dropdown');
+    dropdown.innerHTML = '<div class="location-select-option loading">Memuat...</div>';
+
+    try {
+        const response = await fetch(`${BASE_URL}/kecamatan?api_key=${API_KEY}&id_kabupaten=${kotaId}`);
+        const data = await response.json();
+
+        if (data.code === '200') {
+            dropdown.innerHTML = data.value.map(kec => 
+                `<div class="location-select-option" data-id="${kec.id}" data-name="${kec.name}">${kec.name}</div>`
+            ).join('');
+        } else {
+            dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+        }
+    } catch (error) {
+        console.error('Error loading kecamatan:', error);
+        dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+    }
+}
+
+async function loadKelurahan(kecamatanId) {
+    const dropdown = document.getElementById('kelurahan-dropdown');
+    dropdown.innerHTML = '<div class="location-select-option loading">Memuat...</div>';
+
+    try {
+        const response = await fetch(`${BASE_URL}/kelurahan?api_key=${API_KEY}&id_kecamatan=${kecamatanId}`);
+        const data = await response.json();
+
+        if (data.code === '200') {
+            dropdown.innerHTML = data.value.map(kel => 
+                `<div class="location-select-option" data-id="${kel.id}" data-name="${kel.name}">${kel.name}</div>`
+            ).join('');
+        } else {
+            dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+        }
+    } catch (error) {
+        console.error('Error loading kelurahan:', error);
+        dropdown.innerHTML = '<div class="location-select-option loading">Gagal memuat data</div>';
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', closeAllLocationDropdowns);
+
+// Call this inside your existing DOMContentLoaded
+// Add: initLocationModal();
