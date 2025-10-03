@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="dicoding:email" content="andikadwipwf@gmail.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Djahit - Homepage</title>
     <link rel="icon" type="image/x-icon" href="frontend/assets/img/logo.svg">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,41 +32,52 @@
 </head>
 <body class="bg-cream font-sans" style="overflow-x: hidden;">
     <div id="navbar-container"></div>
-    <section class="w-full min-h-[680px] max-h-[680px] lg:min-h-[680px] lg:max-h-[680px] md:min-h-[700px] md:max-h-[700px] sm:min-h-[500px] sm:max-h-[500px] flex items-center relative" style="background-color: #E9E4D4;" id="Home">
-        <!-- Decorative elements - hidden on mobile -->
-        <img src="frontend/assets/img/Polygon 1.svg" alt="triangle" class="absolute top-[70px] left-[795px] hidden lg:block">
-        <img src="frontend/assets/img/Polygon 2.svg" alt="triangle" class="absolute top-[80px] left-[730px] hidden lg:block">
-        <img src="frontend/assets/img/Brutalist 55.svg" alt="illustration" class="absolute left-[2px] bottom-[-170px] hidden lg:block" id="mustontop">
-        <img src="frontend/assets/img/Brutalist 35.svg" alt="illustration" class="absolute right-[2px] top-[70px] hidden lg:block" id="rightcorner">
-        <div class="absolute top-[500px] left-[600px] w-12 h-12 border-[2px] border-[#626A53] rounded-[8px] transform rotate-[6deg] hidden lg:block"></div>
-        <div class="absolute top-[550px] left-[500px] w-24 h-24 border-[2px] border-[#626A53] rounded-[16px] transform rotate-[42deg] hidden lg:block"></div>
+    <section class="w-full py-8 sm:py-12 md:py-16 lg:py-20 flex items-center relative bg-cream" id="Home">
+        <!-- Decorative elements - ONLY on large desktop -->
+        <img src="frontend/assets/img/Polygon 1.svg" alt="" class="absolute top-[70px] left-[795px] hidden xl:block pointer-events-none">
+        <img src="frontend/assets/img/Polygon 2.svg" alt="" class="absolute top-[80px] left-[730px] hidden xl:block pointer-events-none">
+        <img src="frontend/assets/img/Brutalist 55.svg" alt="" class="absolute left-[2px] bottom-[-170px] hidden xl:block pointer-events-none" id="mustontop">
+        <img src="frontend/assets/img/Brutalist 35.svg" alt="" class="absolute right-[2px] top-[70px] hidden xl:block pointer-events-none">
+        <div class="absolute top-[500px] left-[600px] w-12 h-12 border-2 border-[#626A53] rounded-lg rotate-6 hidden xl:block pointer-events-none"></div>
+        <div class="absolute top-[550px] left-[500px] w-24 h-24 border-2 border-[#626A53] rounded-2xl rotate-[42deg] hidden xl:block pointer-events-none"></div>
         
-        <div class="max-w-7xl mx-auto py-6 lg:py-12 px-4 lg:px-0">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center lg:space-x-12">
-                <div class="text-center lg:text-left lg:mr-[20px] lg:mt-[-50px] order-2 lg:order-1">
-                    <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight" style="color: #393E30;">
-                        Selamatkan <span style="color: #A85C47;">Pakaianmu</span>,<br>
-                        Selamatkan <span style="color: #A85C47;">Bumi</span> Kita
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
+                
+                <!-- Text Content - Shows second on mobile, first on desktop -->
+                <div class="order-2 lg:order-1 text-center lg:text-left space-y-4 sm:space-y-6">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight">
+                        <span class="block text-[#393E30]">Selamatkan <span class="text-[#A85C47]">Pakaianmu</span>,</span>
+                        <span class="block text-[#393E30]">Selamatkan <span class="text-[#A85C47]">Bumi</span> Kita</span>
                     </h1>
-                    <p class="text-lg md:text-xl lg:text-2xl mt-4 lg:mt-[24px] text-gray-700 max-w-lg mx-auto lg:mx-0">
+                    
+                    <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 max-w-xl mx-auto lg:mx-0">
                         Platform perbaikan pakaian berbasis komunitas yang berkelanjutan dan mudah diakses.
                     </p>
-                    <button class="bg-djahit-orange text-white whitespace-nowrap h-[45px] w-[235px] mt-8 lg:mt-[60px] rounded-full text-lg font-semibold hover:opacity-90 transition-opacity flex items-center mx-auto lg:mx-0" onclick="window.location.href = '../../frontend/page/forminput.html'">
-                        <span class="pl-6">Mulai Sekarang</span>
-                        <img src="frontend/assets/img/arrow.svg" alt="arrow" class="pl-[27px]">
-                    </button>
-                </div>                
-                <div class="flex justify-center lg:justify-end order-1 lg:order-2">
-                    <div class="lg:fixed lg:ml-[200px] w-full lg:w-auto flex justify-center">
-    <img src="frontend/assets/img/hero6.png" 
-         alt="Woman in elegant clothing" 
-         class="object-contain md:object-contain lg:object-cover
-                w-[220px] sm:w-[260px] md:w-[400px] lg:w-[600px]
-                max-h-[220px] sm:max-h-[260px] md:max-h-[500px] lg:max-h-[638px]
-                mt-0 lg:mt-[-315px] shadow-none">
-</div>
-
+                    
+                    <div class="pt-2 sm:pt-4">
+                        <button 
+                            class="bg-[#E07A5F] text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-full text-base sm:text-lg font-semibold hover:bg-[#d06b50] transition-all duration-300 inline-flex items-center gap-3 mx-auto lg:mx-0" 
+                            onclick="window.location.href = '/frontend/page/forminput.html'">
+                            <span>Mulai Sekarang</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+                
+                <!-- Hero Image - Shows first on mobile, second on desktop -->
+                <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
+                    <div class="relative w-full max-w-[280px] sm:max-w-[320px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[600px]">
+                        <img 
+                            src="frontend/assets/img/hero6.png" 
+                            alt="Woman in elegant clothing" 
+                            class="w-full h-auto object-contain"
+                            loading="eager">
+                    </div>
+                </div>
+                
             </div>
         </div>
     </section>
@@ -233,7 +245,7 @@
 
     </section>
     <div id="footer-container"></div>
-        <script type="module" src="frontend/assets/js/indexv2.js"></script>
+        <script type="module" src="frontend/assets/js/index.js"></script>
 <!-- Chatbot floating widget -->
 <div id="chatbotWidget" class="fixed bottom-4 right-4 w-[360px] max-w-full bg-[#7A8568] rounded-2xl shadow-xl flex flex-col overflow-hidden z-50 font-sans">
 
@@ -276,7 +288,32 @@
     width: 360px;
     max-width: 100%;
   }
+  @media (max-width: 640px) {
+    #Home {
+        min-height: auto !important;
+        max-height: none !important;
+    }
+    
+    #Home .grid {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}
 
+    @media (min-width: 641px) and (max-width: 1023px) {
+        #Home {
+            min-height: 600px !important;
+        }
+    }
+
+    /* Ensure decorative elements never interfere on mobile/tablet */
+    @media (max-width: 1279px) {
+        #mustontop,
+        [alt="triangle"],
+        [alt="illustration"] {
+            display: none !important;
+        }
+    }
   /* Mobile adjustments */
   @media (max-width: 640px) {
     #chatbotWidget {

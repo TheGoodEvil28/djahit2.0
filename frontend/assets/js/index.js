@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });            
     
-    if (window.innerWidth >= 1024) {
+    if (window.innerWidth >= 1280) {
         const mustontop = document.getElementById('mustontop');
         if (mustontop) {
             mustontop.style.cssText = `
@@ -63,13 +63,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 z-index: 9999 !important;
                 pointer-events: none !important;
             `;
-            let scrollTimeout;
-            window.addEventListener('scroll', () => {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    mustontop.style.zIndex = '9999';
-                }, 10);
-            });
         }
     }
 
