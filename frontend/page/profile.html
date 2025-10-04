@@ -67,14 +67,14 @@
             
             <form id="edit-profile-form" class="space-y-4">
                 <div>
-                    <label for="edit-firstname" class="block text-sm font-medium text-gray-700 mb-1">Nama Depan</label>
+                    <label for="edit-firstname" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                     <input type="text" id="edit-firstname" name="firstname" 
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent bg-white text-gray-800 placeholder-gray-400"
                         placeholder="Nama Depan" required>
                 </div>
                 
                 <div>
-                    <label for="edit-lastname" class="block text-sm font-medium text-gray-700 mb-1">Nama Belakang</label>
+                    <label for="edit-lastname" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                     <input type="text" id="edit-lastname" name="lastname" 
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-djahit-orange focus:border-transparent bg-white text-gray-800 placeholder-gray-400"
                         placeholder="Nama Belakang" required>
@@ -85,7 +85,7 @@
                     <input type="email" id="edit-email" name="email" 
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
                         placeholder="Email" disabled>
-                    <p class="text-xs text-gray-500 mt-1">Email tidak dapat diubah</p>
+                    <p class="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                 </div>
                 
                 <div>
@@ -98,11 +98,11 @@
                 <div class="flex gap-3 mt-6">
                     <button type="button" onclick="closeEditModal()" 
                         class="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium">
-                        Batal
+                        Cancel
                     </button>
                     <button type="submit" 
                         class="flex-1 px-4 py-3 bg-djahit-orange text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium">
-                        Simpan Perubahan
+                        Save Changes
                     </button>
                 </div>
             </form>
@@ -112,16 +112,16 @@
     <!-- Confirmation Modal -->
     <div id="confirm-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">Konfirmasi Perubahan</h3>
-            <p class="text-gray-600 mb-6">Apakah Anda yakin ingin menyimpan perubahan data profil?</p>
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Confirm Changes</h3>
+            <p class="text-gray-600 mb-6">Are you sure you want to save the profile changes?</p>
             <div class="flex gap-3">
                 <button onclick="cancelConfirm()" 
                     class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                    Tidak
+                    No
                 </button>
                 <button onclick="confirmUpdate()" 
                     class="flex-1 px-4 py-2 bg-djahit-orange text-white rounded-lg hover:bg-opacity-90 transition-colors">
-                    Ya, Simpan
+                    Yes, Save
                 </button>
             </div>
         </div>
@@ -135,8 +135,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">Berhasil!</h3>
-            <p class="text-gray-600 text-center mb-4">Profil Anda berhasil diperbarui.</p>
+            <h3 class="text-lg font-semibold text-gray-800 text-center mb-2">Success!</h3>
+            <p class="text-gray-600 text-center mb-4">Your profile has been successfully updated.</p>
             <button onclick="closeSuccessModal()" 
                 class="w-full px-4 py-2 bg-djahit-orange text-white rounded-lg hover:bg-opacity-90 transition-colors">
                 OK
@@ -145,7 +145,7 @@
     </div>
     <main class="max-w-7xl mx-auto px-4 md:px-6 pb-8 pt-12 md:pt-16">
         <div class="min-h-[250px] bg-section-white rounded-2xl py-6 md:py-8 px-4 md:px-8 lg:px-16 mb-8">
-            <h2 class="text-base font-medium text-button-green mb-4 md:mb-6 border-b border-[#A3B18A] pb-2">Informasi Akun</h2>            
+            <h2 class="text-base font-medium text-button-green mb-4 md:mb-6 border-b border-[#A3B18A] pb-2">Account Information</h2>            
             <div class="hidden lg:flex items-start justify-between">
                 <div class="flex items-start space-x-24 pl-20">
                     <div class="relative">
@@ -154,16 +154,16 @@
                         </div>
                         <button class="mobile-button absolute flex items-center justify-center -bottom-10 left-1/2 transform -translate-x-1/2 bg-[#CA6E56] bg-opacity-80 text-white text-xs py-1 rounded-3xl w-[140px] h-[30px] hover:bg-opacity-100 transition-colors">
                             <img src="../assets/img/buttonUbah.svg" alt="">
-                            Ubah Profil
+                            Edit Profile
                         </button>
                     </div>                    
                     <div class="grid grid-cols-2 gap-x-24 gap-y-[17px]">
                         <div>
-                            <p class="text-xs text-text-dark mb-1">Nama Depan</p>
+                            <p class="text-xs text-text-dark mb-1">First Name</p>
                             <p id="firstname-display" class="font-medium text-base text-text-radio">Loading...</p>
                         </div>
                         <div>
-                            <p class="text-xs text-text-dark mb-1">Nama Belakang</p>
+                            <p class="text-xs text-text-dark mb-1">Last Name</p>
                             <p id="lastname-display" class="font-medium text-base text-text-radio">Loading...</p>
                         </div>
                         <div>
@@ -177,7 +177,7 @@
                     </div>
                 </div>                
                 <div class="text-center pr-16">
-                    <p class="text-sm text-gray-500 mb-2">Poin Reward</p>
+                    <p class="text-sm text-gray-500 mb-2">Reward Points</p>
                     <div class="text-xl font-bold text-djahit-orange mb-4">240*</div>
                     <button class="bg-djahit-orange text-base text-white w-[176px] h-[36px] px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium">
                         Redeem Reward
@@ -192,17 +192,17 @@
                         </div>
                         <button class="mobile-button absolute flex items-center justify-center -bottom-11 sm:-bottom-12 left-1/2 transform -translate-x-1/2 bg-[#CA6E56] bg-opacity-80 text-white text-xs py-1 rounded-3xl w-28 w-[30px] md:w-[130px] h-[28px] sm:h-[30px] mobile-button">
                             <img src="../assets/img/buttonUbah.svg" alt="" class="mr-1">
-                            <span class="hidden sm:inline">Ubah Profil</span>
+                            <span class="hidden sm:inline">Edit Profile</span>
                         </button>
                     </div>
                     <div class="flex-1 w-full mt-8 sm:mt-0">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-x-8 sm:gap-y-4">
                             <div>
-                                <p class="text-xs text-text-dark mb-1">Nama Depan</p>
+                                <p class="text-xs text-text-dark mb-1">First Name</p>
                                 <p id="firstname-display-mobile" class="font-medium text-sm sm:text-base text-text-radio">Loading...</p>
                             </div>
                             <div>
-                                <p class="text-xs text-text-dark mb-1">Nama Belakang</p>
+                                <p class="text-xs text-text-dark mb-1">Last Name</p>
                                 <p id="lastname-display-mobile" class="font-medium text-sm sm:text-base text-text-radio">Loading...</p>
                             </div>
                             <div>
@@ -217,7 +217,7 @@
                     </div>
                 </div>
                 <div class="text-center border-t border-[#A3B18A] pt-4">
-                    <p class="text-sm text-gray-500 mb-2">Poin Reward</p>
+                    <p class="text-sm text-gray-500 mb-2">Reward Points</p>
                     <div class="text-xl font-bold text-djahit-orange mb-4">240*</div>
                     <button class="bg-djahit-orange text-sm sm:text-base text-white w-full sm:w-[176px] h-[36px] px-6 rounded-lg hover:bg-opacity-90 transition-colors font-medium">
                         Redeem Reward
@@ -227,7 +227,7 @@
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             <div class="bg-section-white rounded-2xl pt-6 md:pt-7 pl-4 md:pl-6 pr-6 md:pr-14 pb-6">
-                <h3 class="text-base font-medium text-[#A3B18A] mb-4 border-b border-[#A3B18A] pb-2">Riwayat Order</h3>
+                <h3 class="text-base font-medium text-[#A3B18A] mb-4 border-b border-[#A3B18A] pb-2">Order History</h3>
                 <div>
                     <div class="flex items-center justify-between min-h-[40px] py-3 md:py-4 pl-3 md:pl-4 pr-2 md:pr-3 bg-table rounded-t-2xl">
                         <div class="flex-1 min-w-0">
@@ -265,26 +265,26 @@
                 </div>
             </div>
             <div class="bg-section-white rounded-2xl pt-6 md:pt-7 pl-4 md:pl-6 pr-6 md:pr-14 pb-6">
-                <h3 class="text-base font-medium text-[#A3B18A] mb-4 border-b border-[#A3B18A] pb-2">Riwayat Kegiatan</h3>
+                <h3 class="text-base font-medium text-[#A3B18A] mb-4 border-b border-[#A3B18A] pb-2">Activity History</h3>
                 <div>
                     <div class="flex items-center justify-between min-h-[40px] py-3 md:py-4 pl-3 md:pl-4 pr-4 md:pr-6 bg-table rounded-t-2xl">
                         <div class="flex-1 min-w-0">
                             <span class="text-gray-600 text-sm md:text-base mr-2">1.</span>
-                            <span class="font-medium text-sm md:text-base text-gray-900">Donasi Baju</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900">Clothing Donation</span>
                         </div>
                         <span class="text-djahit-orange text-sm md:text-base font-semibold flex-shrink-0 ml-2">20 Pts</span>
                     </div>
                     <div class="flex items-center justify-between min-h-[40px] py-3 md:py-4 pl-3 md:pl-4 pr-4 md:pr-6 bg-transparent">
                         <div class="flex-1 min-w-0">
                             <span class="text-gray-600 text-sm md:text-base mr-2">2.</span>
-                            <span class="font-medium text-sm md:text-base text-gray-900">Perbaiki Baju</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900">Repair Clothing</span>
                         </div>
                         <span class="text-djahit-orange text-sm md:text-base font-semibold flex-shrink-0 ml-2">10 Pts</span>
                     </div>
                     <div class="flex items-center justify-between min-h-[40px] py-3 md:py-4 pl-3 md:pl-4 pr-4 md:pr-6 bg-table rounded-b-2xl">
                         <div class="flex-1 min-w-0">
                             <span class="text-gray-600 text-sm md:text-base mr-2">3.</span>
-                            <span class="font-medium text-sm md:text-base text-gray-900">Ajak Mitra</span>
+                            <span class="font-medium text-sm md:text-base text-gray-900">Invite Partner</span>
                         </div>
                         <span class="text-djahit-orange text-sm md:text-base font-semibold flex-shrink-0 ml-2">50 Pts</span>
                     </div>
@@ -294,6 +294,6 @@
     </main>
     <div id="footer-container"></div>    
     
-    <script type="module" src="../assets/js/profilev1.js"></script>
+    <script type="module" src="../assets/js/profile.js"></script>
 </body>
 </html>
