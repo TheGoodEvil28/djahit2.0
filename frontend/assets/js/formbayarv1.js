@@ -12,6 +12,16 @@ function getCurrentUser() {
     const userData = localStorage.getItem('userData');
     return userData ? JSON.parse(userData) : null;
 }
+const sanitizeFilename = (filename) => {
+  if (!filename) return 'clothing-image.jpg';
+  let decoded = decodeURIComponent(filename);
+  let sanitized = decoded
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return sanitized || 'clothing-image.jpg';
+};
 document.addEventListener('DOMContentLoaded', function() {
     $('#navbar-container').load('navbar.html');
     $('#footer-container').load('footer.html');
@@ -19,13 +29,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const analysisData = JSON.parse(sessionStorage.getItem('djahitAnalysisData') || '{}');
     console.log('Loaded form data:', formData);
     console.log('Loaded analysis data:', analysisData);
-
     if (Object.keys(formData).length === 0) {
         alert('No order data found. Redirecting to form input page.');
         window.location.href = 'forminput.html';
         return;
     }
-
     displayImageGallery(analysisData);
     displayAnalysisResults(analysisData);
     populateFormData(formData);    
@@ -36,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPaymentGateway();
     setupVoucherHandler(formData, analysisData);
 });
-
 function displayImageGallery(analysisData) {
     const imageGallery = document.getElementById('imageGallery');
     if (!imageGallery) {
@@ -44,7 +51,6 @@ function displayImageGallery(analysisData) {
         return;
     }
     imageGallery.innerHTML = '';
-    
     if (analysisData.images && analysisData.images.length > 0) {
         analysisData.images.forEach((img, index) => {
             const imageDiv = document.createElement('div');
@@ -61,7 +67,6 @@ function displayImageGallery(analysisData) {
                     </div>
                 </div>
             `;
-            
             imageDiv.addEventListener('click', () => showFullImage(img.url, index + 1));
             imageGallery.appendChild(imageDiv);
         });
@@ -69,15 +74,12 @@ function displayImageGallery(analysisData) {
         imageGallery.innerHTML = '<p class="text-gray-500 col-span-full text-center">No images uploaded</p>';
     }
 }
-
 function displayAnalysisResults(analysisData) {
     const resultBox = document.getElementById('analysisResult');
-    
     if (!resultBox) {
         console.error('Analysis result tidak bisa ditemukan');
         return;
     }
-    
     if (analysisData.analysisText && analysisData.analysisText.trim()) {
         resultBox.innerHTML = `
             <div class="prose prose-sm max-w-none">
@@ -94,18 +96,15 @@ function displayAnalysisResults(analysisData) {
         `;
     }
 }
-
 function populateFormData(formData) {
     if (formData.damageType) {
         const damageRadio = document.querySelector(`input[name="damage_type"][value="${formData.damageType}"]`);
         if (damageRadio) damageRadio.checked = true;
     }
-    
     if (formData.clothingType) {
         const clothingRadio = document.querySelector(`input[name="clothing_type"][value="${formData.clothingType}"]`);
         if (clothingRadio) clothingRadio.checked = true;
     }
-    
     const fieldMappings = {
         'damage_description': formData.damageDescription,
         'clothing_description': formData.clothingDescription,
@@ -114,7 +113,6 @@ function populateFormData(formData) {
         'thread_color': formData.threadColor,
         'voucher_code': formData.voucherCode
     };
-    
     Object.entries(fieldMappings).forEach(([name, value]) => {
         const element = document.querySelector(`[name="${name}"]`);
         if (element && value) {
@@ -122,7 +120,6 @@ function populateFormData(formData) {
         }
     });
 }
-
 function makeFormReadOnly() {
     document.querySelectorAll('input[type="radio"]:not([name="analysisType"])').forEach(radio => {
         const isPaymentSection = radio.closest('.bg-section-white')?.querySelector('h3')?.textContent?.includes('Payment Gateway');
@@ -137,50 +134,41 @@ function makeFormReadOnly() {
             input.readOnly = true;
             input.classList.add('cursor-not-allowed');
         }
-    });
-    
+    });   
     document.querySelectorAll('textarea').forEach(textarea => {
         textarea.disabled = true;
         textarea.readOnly = true;
         textarea.classList.add('cursor-not-allowed');
     });
-    
     document.querySelectorAll('#paymentForm label').forEach(label => {
         const isPaymentLabel = label.closest('.bg-section-white')?.querySelector('h3')?.textContent?.includes('Payment Gateway');
         if (!isPaymentLabel) {
             label.classList.add('cursor-default');
         }
     });
-    
     document.querySelectorAll('.payment-option').forEach(option => {
         option.classList.remove('cursor-not-allowed');
         option.classList.add('cursor-pointer');
     });
 }
-
 function setupPaymentGateway() {
     const paymentOptions = document.querySelectorAll('.payment-option');
     const customPaymentInput = document.getElementById('customPayment');
-    let selectedPaymentMethod = null;
-    
+    let selectedPaymentMethod = null;   
     paymentOptions.forEach(option => {
         option.addEventListener('click', () => {
             paymentOptions.forEach(opt => {
                 opt.classList.remove('border-djahit-orange', 'bg-orange-50');
                 opt.classList.add('border-gray-300');
             });
-            
             option.classList.remove('border-gray-300');
             option.classList.add('border-djahit-orange', 'bg-orange-50');
-            
             selectedPaymentMethod = option.getAttribute('data-payment');
-            
             if (customPaymentInput) {
                 customPaymentInput.value = '';
             }
         });
     });
-    
     if (customPaymentInput) {
         customPaymentInput.addEventListener('input', function() {
             if (this.value.trim()) {
@@ -192,7 +180,6 @@ function setupPaymentGateway() {
             }
         });
     }
-    
     window.getSelectedPayment = function() {
         if (customPaymentInput && customPaymentInput.value.trim()) {
             return { type: 'custom', value: customPaymentInput.value.trim() };
@@ -203,23 +190,17 @@ function setupPaymentGateway() {
         return null;
     };
 }
-
 function setupPaymentSubmission(formData, analysisData, pricing) {
-    const paymentForm = document.getElementById('paymentForm');
-    
+    const paymentForm = document.getElementById('paymentForm');   
     if (!paymentForm) {
         console.error('Payment form not found');
         return;
     }
-    
     paymentForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
+        e.preventDefault();   
         const payment = window.getSelectedPayment();
-        
         if (!payment) {
             alert('Mohon pilih metode pembayaran atau masukkan metode pembayaran lainnya');
-            
             const paymentSection = document.querySelector('.bg-section-white:has(#customPayment)');
             if (paymentSection) {
                 paymentSection.classList.add('payment-error');
@@ -229,57 +210,52 @@ function setupPaymentSubmission(formData, analysisData, pricing) {
             }
             return;
         }
-
         const token = getAuthToken();
         if (!token) {
             alert('Anda harus login terlebih dahulu');
             window.location.href = '/frontend/page/login.html';
             return;
         }
-
         const currentUser = getCurrentUser();
         if (!currentUser || !currentUser.phone) {
             alert('Data user tidak lengkap. Silakan login kembali.');
             window.location.href = '/frontend/page/login.html';
             return;
         }
-
         const submitButton = document.querySelector('button[type="submit"][form="paymentForm"]');
         const originalButtonText = submitButton.textContent;
         submitButton.disabled = true;
         submitButton.textContent = 'Memproses...';
-        
         const capitalizeFirst = (str) => {
             if (!str) return str;
             return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
         };
-
         const damageTypeMap = {
             'sobek': 'Sobek',
             'kancing_hilang': 'Kancing Hilang',
             'resleting_rusak': 'Resleting Rusak',
             'lainnya': 'Lainnya'
         };
-
         const clothingTypeMap = {
             'baju': 'Baju',
             'celana': 'Celana',
             'outer': 'Outer',
             'lainnya': 'Lainnya'
         };
-        //coba cek
         const imageData = analysisData.images[0];
         console.log('Full image data:', imageData); 
-
-
         try {
             const apiPayload = {
                 original_img_url: imageData.url,
-                img_filename: imageData.filename || imageData.name || imageData.url.split('/').pop().split('?')[0] || 'clothing-image.jpg',
+                img_filename: sanitizeFilename(
+                    imageData.filename || 
+                    imageData.name || 
+                    (imageData.url ? imageData.url.split('/').pop().split('?')[0] : null)
+                ),
                 file_size: parseInt(imageData.size || imageData.fileSize) || 1024, 
                 mime_type: imageData.type || imageData.mimeType || imageData.mime_type || 'image/jpeg',
                 ai_scan_desc: analysisData.analysisText || '',
-                
+
                 damage_type: damageTypeMap[formData.damageType] || 'Lainnya',
                 damage_type_other_desc: formData.damageDescription || null,
         
