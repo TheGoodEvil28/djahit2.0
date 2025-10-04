@@ -147,7 +147,7 @@ function populateOrderHistory(repairRequests) {
                     <span class="text-gray-600 text-sm md:text-base mr-2">${index + 1}.</span>
                     <span class="font-medium text-sm md:text-base text-gray-900">${itemName}</span>
                 </div>
-                <a href="riwayat.html" class="text-djahit-orange text-sm md:text-base font-medium hover:underline flex items-center flex-shrink-0 ml-2">
+                <a href="riwayatorder.html" class="text-djahit-orange text-sm md:text-base font-medium hover:underline flex items-center flex-shrink-0 ml-2">
                     <span class="hidden sm:inline">Detail</span>
                     <span class="sm:hidden">Detail</span>
                     <img src="../assets/img/right.svg" class="pl-1 md:pl-2 w-4 md:w-auto" alt="arrow to the right">
