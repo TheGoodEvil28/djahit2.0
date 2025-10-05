@@ -1,5 +1,4 @@
-
-        document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         const API_BASE =  'https://djahit.andikanugra.my.id/api'; 
 
     $('#navbar-container').load('loginnavbar.html', function() {
@@ -9,10 +8,8 @@
     });
     $('#footer-container').load('loginfooter.html');
 
-    // Check if user is already logged in
     const token = localStorage.getItem('authToken');
     if (token) {
-        // Verify token is still valid
         fetch(`${API_BASE}/users/me`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -21,11 +18,9 @@
         })
         .then(response => {
             if (response.ok) {
-                // User is logged in, redirect to dashboard
-                window.location.href = '../../index.html'; // Update with your dashboard URL
+                window.location.href = '../../index.html'; 
                 return;
             }
-            // Token is invalid, remove it
             localStorage.removeItem('authToken');
             localStorage.removeItem('userData');
         })
@@ -226,17 +221,60 @@
         });
     }
 
-    // Google login handler (if you implement Google OAuth later)
     const googleButton = document.querySelector('button[type="button"]');
     if (googleButton) {
         googleButton.addEventListener('click', function() {
-            showToast('Google login coming soon!', 'error');
-            // TODO: Implement Google OAuth
+            window.location.href = `${API_BASE}/auth/google`;
         });
     }
 
-    // Check URL parameters for messages
     const urlParams = new URLSearchParams(window.location.search);
+    const oauthSuccess = urlParams.get('oauth');
+
+    if (oauthSuccess === 'success') {
+        if (window.location.hash) {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = hashParams.get('accessToken');
+            const refreshToken = hashParams.get('refreshToken');
+            
+            if (accessToken) {
+                localStorage.setItem('authToken', accessToken);
+                if (refreshToken) {
+                    localStorage.setItem('refreshToken', refreshToken);
+                }
+                
+                fetch(`${API_BASE}/users/me`, {
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data && data.data.user) {
+                        localStorage.setItem('userData', JSON.stringify(data.data.user));
+                        
+                        showToast('Login successful with Google!', 'success');
+                        
+                        history.replaceState(null, null, window.location.pathname);
+                        
+                        setTimeout(() => {
+                            window.location.href = '../../index.html';
+                        }, 1500);
+                    } else {
+                        showToast('Failed to load user profile', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    showToast('Login successful but failed to load profile', 'error');
+                });
+            } else {
+                showToast('OAuth tokens not found', 'error');
+            }
+        }
+    }
+
     const success = urlParams.get('success');
     const error = urlParams.get('error');
 
@@ -364,6 +402,7 @@
             }
         }
     });
+    
 });
 
 // Utility functions for other pages to use
