@@ -1,5 +1,6 @@
     document.addEventListener('DOMContentLoaded', function() {
-        const API_BASE =  'https://djahit.andikanugra.my.id/api'; 
+        const API_BASE = 'https://djahit.andikanugra.my.id/api';
+        const GOOGLE_CLIENT_ID = '891575249300-q0dg8kp5rd32uhp857bu00d5lv8e48gc.apps.googleusercontent.com';
 
     $('#navbar-container').load('loginnavbar.html', function() {
         if (typeof initializeButtonEffects === 'function') {
@@ -195,7 +196,103 @@
             }
         }
     }
+    // ==================== GOOGLE SIGN-IN ====================
 
+    async function handleGoogleSignIn(response) {
+        console.log('Google Sign-In response received');
+        
+        try {
+            const googleButton = document.querySelector('button[type="button"]');
+            const originalText = googleButton.innerHTML;
+            googleButton.disabled = true;
+            googleButton.innerHTML = `
+                <svg class="animate-spin w-5 h-5 mr-3 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span class="text-[#888C9E] font-medium">Signing in...</span>
+            `;
+
+            const apiResponse = await fetch(`${API_BASE}/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    idToken: response.credential
+                })
+            });
+
+            const data = await apiResponse.json();
+
+            if (apiResponse.ok && data.success) {
+                localStorage.setItem('authToken', data.data.accessToken);
+                localStorage.setItem('refreshToken', data.data.refreshToken);
+                localStorage.setItem('userData', JSON.stringify(data.data.user));
+
+                showToast(data.message || 'Login successful with Google!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = '../../index.html';
+                }, 1500);
+
+            } else {
+                console.error('Backend error:', data);
+                showToast(data.error?.message || 'Failed to sign in with Google', 'error');
+                googleButton.disabled = false;
+                googleButton.innerHTML = originalText;
+            }
+
+        } catch (error) {
+            console.error('Google Sign-In error:', error);
+            showToast('Failed to authenticate with Google. Please try again.', 'error');
+            
+            const googleButton = document.querySelector('button[type="button"]');
+            googleButton.disabled = false;
+            googleButton.innerHTML = originalText;
+        }
+    }
+
+    function initializeGoogleSignIn() {
+        console.log('Initializing Google Sign-In...');
+        
+        if (typeof google === 'undefined') {
+            console.error('Google Sign-In API not loaded');
+            return;
+        }
+
+        try {
+            google.accounts.id.initialize({
+                client_id: GOOGLE_CLIENT_ID,
+                callback: handleGoogleSignIn,
+                auto_select: false,
+                cancel_on_tap_outside: true
+            });
+
+            console.log('Google Sign-In initialized successfully');
+
+            const googleButton = document.querySelector('button[type="button"]');
+            if (googleButton) {
+                googleButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Google button clicked, prompting sign-in...');
+                    google.accounts.id.prompt();
+                });
+            }
+
+        } catch (error) {
+            console.error('Failed to initialize Google Sign-In:', error);
+        }
+    }
+
+    const googleScript = document.createElement('script');
+    googleScript.src = 'https://accounts.google.com/gsi/client';
+    googleScript.async = true;
+    googleScript.defer = true;
+    googleScript.onload = initializeGoogleSignIn;
+    document.head.appendChild(googleScript);
+
+// ==================== END GOOGLE SIGN-IN ====================
     // Form submission handler
     const form = document.querySelector('form');
     if (form) {
@@ -221,60 +318,8 @@
         });
     }
 
-    const googleButton = document.querySelector('button[type="button"]');
-    if (googleButton) {
-        googleButton.addEventListener('click', function() {
-            window.location.href = `${API_BASE}/auth/google`;
-        });
-    }
 
     const urlParams = new URLSearchParams(window.location.search);
-    const oauthSuccess = urlParams.get('oauth');
-
-    if (oauthSuccess === 'success') {
-        if (window.location.hash) {
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
-            const accessToken = hashParams.get('accessToken');
-            const refreshToken = hashParams.get('refreshToken');
-            
-            if (accessToken) {
-                localStorage.setItem('authToken', accessToken);
-                if (refreshToken) {
-                    localStorage.setItem('refreshToken', refreshToken);
-                }
-                
-                fetch(`${API_BASE}/users/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.data && data.data.user) {
-                        localStorage.setItem('userData', JSON.stringify(data.data.user));
-                        
-                        showToast('Login successful with Google!', 'success');
-                        
-                        history.replaceState(null, null, window.location.pathname);
-                        
-                        setTimeout(() => {
-                            window.location.href = '../../index.html';
-                        }, 1500);
-                    } else {
-                        showToast('Failed to load user profile', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                    showToast('Login successful but failed to load profile', 'error');
-                });
-            } else {
-                showToast('OAuth tokens not found', 'error');
-            }
-        }
-    }
-
     const success = urlParams.get('success');
     const error = urlParams.get('error');
 
