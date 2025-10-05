@@ -33,7 +33,7 @@
     }
 
     // Password toggle functionality
-    const passwordToggle = document.querySelector('input[type="password"] + div button');
+    const passwordToggle = document.getElementById('password-toggle-btn');
     const passwordInput = document.querySelector('input[type="password"]');
     if (passwordToggle && passwordInput) {
         passwordToggle.addEventListener('click', function() {
