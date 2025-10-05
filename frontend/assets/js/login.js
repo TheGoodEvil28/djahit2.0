@@ -254,66 +254,41 @@
     }
 
     function initializeGoogleSignIn() {
-        console.log('Initializing Google Sign-In...');
-        
-        if (typeof google === 'undefined') {
-            console.error('Google Sign-In API not loaded');
-            return;
-        }
-
-        try {
-            google.accounts.id.initialize({
-                client_id: GOOGLE_CLIENT_ID,
-                callback: handleGoogleSignIn,
-                auto_select: false,
-                cancel_on_tap_outside: true
-            });
-
-            console.log('Google Sign-In initialized successfully');
-
-            // Wait a bit for DOM to be ready
-            setTimeout(() => {
-                const googleButton = document.querySelector('button[type="button"]');
-                console.log('Google button found:', googleButton); // DEBUG
-                
-                if (googleButton) {
-                    // Remove any existing listeners
-                    const newButton = googleButton.cloneNode(true);
-                    googleButton.parentNode.replaceChild(newButton, googleButton);
-                    
-                    newButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Google button clicked, prompting sign-in...');
-                        
-                        try {
-                            google.accounts.id.prompt((notification) => {
-                                console.log('Prompt notification:', notification);
-                                
-                                if (notification.isNotDisplayed()) {
-                                    console.log('Prompt not displayed:', notification.getNotDisplayedReason());
-                                    // Fallback: show a manual message
-                                    showToast('Please allow popups for Google Sign-In', 'error');
-                                } else if (notification.isSkippedMoment()) {
-                                    console.log('Prompt skipped:', notification.getSkippedReason());
-                                }
-                            });
-                        } catch (error) {
-                            console.error('Prompt error:', error);
-                            showToast('Failed to open Google Sign-In. Please try again.', 'error');
-                        }
-                    });
-                    
-                    console.log('Click listener attached to Google button');
-                } else {
-                    console.error('Google button not found in DOM');
-                }
-            }, 500);
-
-        } catch (error) {
-            console.error('Failed to initialize Google Sign-In:', error);
-        }
+    console.log('Initializing Google Sign-In...');
+    
+    if (typeof google === 'undefined') {
+        console.error('Google Sign-In API not loaded');
+        return;
     }
+
+    try {
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleSignIn,
+            auto_select: false,
+            cancel_on_tap_outside: true
+        });
+
+        console.log('Google Sign-In initialized successfully');
+
+        setTimeout(() => {
+            const googleButton = document.getElementById('google-signin-button');
+            console.log('Google button found:', googleButton);
+            
+            if (googleButton) {
+                googleButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Google button clicked!');
+                    google.accounts.id.prompt();
+                });
+                console.log('Click listener attached');
+            }
+        }, 500);
+
+    } catch (error) {
+        console.error('Failed to initialize Google Sign-In:', error);
+    }
+}
 
     const googleScript = document.createElement('script');
     googleScript.src = 'https://accounts.google.com/gsi/client';

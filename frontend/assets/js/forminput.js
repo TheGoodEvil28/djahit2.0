@@ -8,7 +8,7 @@
             $('#navbar-container').load('navbar.html');
             $('#footer-container').load('footer.html');
             const currentUser = getCurrentUser();
-            if (!currentUser.phone.match(/^(\+62|62|0)[0-9]{9,13}$/)) {
+            if (currentUser.phone === null || currentUser.phone === undefined ||!currentUser.phone.match(/^(\+62|62|0)[0-9]{9,13}$/)) {
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
             modal.innerHTML = `
