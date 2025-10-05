@@ -271,14 +271,44 @@
 
             console.log('Google Sign-In initialized successfully');
 
-            const googleButton = document.querySelector('button[type="button"]');
-            if (googleButton) {
-                googleButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    console.log('Google button clicked, prompting sign-in...');
-                    google.accounts.id.prompt();
-                });
-            }
+            // Wait a bit for DOM to be ready
+            setTimeout(() => {
+                const googleButton = document.querySelector('button[type="button"]');
+                console.log('Google button found:', googleButton); // DEBUG
+                
+                if (googleButton) {
+                    // Remove any existing listeners
+                    const newButton = googleButton.cloneNode(true);
+                    googleButton.parentNode.replaceChild(newButton, googleButton);
+                    
+                    newButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Google button clicked, prompting sign-in...');
+                        
+                        try {
+                            google.accounts.id.prompt((notification) => {
+                                console.log('Prompt notification:', notification);
+                                
+                                if (notification.isNotDisplayed()) {
+                                    console.log('Prompt not displayed:', notification.getNotDisplayedReason());
+                                    // Fallback: show a manual message
+                                    showToast('Please allow popups for Google Sign-In', 'error');
+                                } else if (notification.isSkippedMoment()) {
+                                    console.log('Prompt skipped:', notification.getSkippedReason());
+                                }
+                            });
+                        } catch (error) {
+                            console.error('Prompt error:', error);
+                            showToast('Failed to open Google Sign-In. Please try again.', 'error');
+                        }
+                    });
+                    
+                    console.log('Click listener attached to Google button');
+                } else {
+                    console.error('Google button not found in DOM');
+                }
+            }, 500);
 
         } catch (error) {
             console.error('Failed to initialize Google Sign-In:', error);
