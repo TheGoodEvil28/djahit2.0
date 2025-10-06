@@ -1,7 +1,7 @@
         function getAuthToken() {
             return localStorage.getItem('authToken');
         }
-        const API_BASE = 'https://6s3e7o4sw6.execute-api.us-east-1.amazonaws.com/prod';
+        const API_BASE = 'https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod';
         let uploadedImages = [];
         let uploadedKeys = [];
         document.addEventListener('DOMContentLoaded', function() {
@@ -94,7 +94,7 @@
                             continue;
                         }
                         updateProgress((i / imageFiles.length) * 100, `Uploading ${file.name}...`);
-                        const res1 = await fetch(`${API_BASE}/generate-upload-url`, {
+                        const res1 = await fetch(`${API_BASE}/s3lambda`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ filename: file.name, contentType: file.type })
@@ -224,79 +224,129 @@
                     });
             }
             async function analyzeImages(keys, useCustom) {
-                const results = [];
-                for (let i = 0; i < keys.length; i++) {
-                    const key = keys[i];
-                    updateProgress((i / keys.length) * 50, `Analyzing image ${i + 1} of ${keys.length}...`);
-                    try {
-                        const urlRes = await fetch(`${API_BASE}/get-url`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ key })
-                        });
-                        const { getUrl } = await urlRes.json();
-                        let analysisRaw, humanReadable;
-                        if (useCustom) {
-                            updateProgress((i / keys.length) * 50 + 10, `Running YOLO detection...`);
-                            const fileRes = await fetch(getUrl);
-                            const blob = await fileRes.blob();
-                            const formData = new FormData();
-                            formData.append("file", blob, key);
-                            const yoloRes = await fetch("https://djahit.andikanugra.my.id/predict", {
-                                method: "POST",
-                                body: formData
-                            });
-                            analysisRaw = await yoloRes.json();
-                            updateProgress((i / keys.length) * 50 + 25, `Generating description...`);
-                            const chatbotRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    useCase: "yolo-analysis",
-                                    yoloJson: analysisRaw
-                                })
-                            });
-                            humanReadable = await chatbotRes.json();
-                        } else {
-                            updateProgress((i / keys.length) * 50 + 10, `Running AWS Rekognition...`);
-                            const analysisRes = await fetch(`${API_BASE}/analyze`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ key, use_custom: false })
-                            });
-                            analysisRaw = await analysisRes.json();
-                            updateProgress((i / keys.length) * 50 + 25, `Generating description...`);   
-                            const chatbotRes = await fetch("https://3nw62fvjhg.execute-api.us-east-1.amazonaws.com/prod/chatbot", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({
-                                    useCase: "rekognition-analysis",
-                                    rekognitionJson: analysisRaw
-                                })
-                            });
-                            humanReadable = await chatbotRes.json();
-                        }       
-                        results.push({
-                            key,
-                            imageUrl: getUrl,
-                            analysisRaw,
-                            analysisText: humanReadable.reply || 'Analysis completed'
-                        });
-                        
-                    } catch (error) {
-                        console.error(`Error analyzing image ${i + 1}:`, error);
-                        results.push({
-                            key,
-                            imageUrl: '',
-                            analysisRaw: {},
-                            analysisText: `Error analyzing image: ${error.message}`
-                        });
-                    }
-                }
-                updateProgress(100, 'Analysis complete!');
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return results;
+    const results = [];
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        updateProgress((i / keys.length) * 50, `Analyzing image ${i + 1} of ${keys.length}...`);
+        
+        try {
+            // Get signed URL
+            const urlRes = await fetch(`${API_BASE}/s3lambda`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key })
+            });
+            
+            if (!urlRes.ok) {
+                const errorText = await urlRes.text();
+                throw new Error(`S3 Lambda failed (${urlRes.status}): ${errorText}`);
             }
+            
+            const { getUrl } = await urlRes.json();
+            
+            let analysisRaw, humanReadable;
+            
+            if (useCustom) {
+                // YOLO path (unchanged)
+                updateProgress((i / keys.length) * 50 + 10, `Running YOLO detection...`);
+                const fileRes = await fetch(getUrl);
+                const blob = await fileRes.blob();
+                const formData = new FormData();
+                formData.append("file", blob, key);
+                
+                const yoloRes = await fetch("https://djahit.andikanugra.my.id/predict", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                if (!yoloRes.ok) {
+                    const errorText = await yoloRes.text();
+                    throw new Error(`YOLO failed (${yoloRes.status}): ${errorText}`);
+                }
+                
+                analysisRaw = await yoloRes.json();
+                
+                // Chatbot description
+                updateProgress((i / keys.length) * 50 + 25, `Generating description...`);
+                const chatbotRes = await fetch(`${API_BASE}/chatbot`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        useCase: "yolo-analysis",
+                        yoloJson: analysisRaw
+                    })
+                });
+                
+                if (!chatbotRes.ok) {
+                    const errorText = await chatbotRes.text();
+                    throw new Error(`Chatbot failed (${chatbotRes.status}): ${errorText}`);
+                }
+                
+                humanReadable = await chatbotRes.json();
+                
+            } else {
+                // AWS Rekognition path
+                updateProgress((i / keys.length) * 50 + 10, `Running AWS Rekognition...`);
+                
+                console.log('Calling rekognition with key:', key);
+                
+                const analysisRes = await fetch(`${API_BASE}/rekognitionlambda`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ key, use_custom: false })
+                });
+                
+                console.log('Rekognition response status:', analysisRes.status);
+                console.log('Rekognition response headers:', [...analysisRes.headers.entries()]);
+                
+                if (!analysisRes.ok) {
+                    const errorText = await analysisRes.text();
+                    console.error('Rekognition error body:', errorText);
+                    throw new Error(`Rekognition failed (${analysisRes.status}): ${errorText}`);
+                }
+                
+                analysisRaw = await analysisRes.json();
+                console.log('Rekognition result:', analysisRaw);
+                
+                // Chatbot description
+                updateProgress((i / keys.length) * 50 + 25, `Generating description...`);
+                const chatbotRes = await fetch(`${API_BASE}/chatbot`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        useCase: "rekognition-analysis",
+                        rekognitionJson: analysisRaw
+                    })
+                });
+                
+                if (!chatbotRes.ok) {
+                    const errorText = await chatbotRes.text();
+                    throw new Error(`Chatbot failed (${chatbotRes.status}): ${errorText}`);
+                }
+                
+                humanReadable = await chatbotRes.json();
+            }
+            
+            results.push({
+                key,
+                imageUrl: getUrl,
+                analysisRaw,
+                analysisText: humanReadable.reply || 'Analysis completed'
+            });
+            
+        } catch (error) {
+            console.error(`Error analyzing image ${i + 1}:`, error);
+            // Re-throw to show in modal
+            throw new Error(`Image ${i + 1} (${key}): ${error.message}`);
+        }
+    }
+    
+    updateProgress(100, 'Analysis complete!');
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return results;
+}
             window.goBack = function() {
                 window.location.href = '../../frontend/page/forminput.html';
             };
